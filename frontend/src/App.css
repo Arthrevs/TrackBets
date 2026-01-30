@@ -1,0 +1,74 @@
+/* App-specific styles - extends index.css */
+
+/* AI Insight Card animations */
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(139, 92, 246, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(139, 92, 246, 0.4), 0 0 80px rgba(139, 92, 246, 0.2);
+    }
+}
+
+.ai-card-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Shuffling cards animation */
+@keyframes card-shuffle {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-5px) scale(1.02);
+    }
+}
+
+.shuffle-card {
+    animation: card-shuffle 4s ease-in-out infinite;
+}
+
+.shuffle-card:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.shuffle-card:nth-child(3) {
+    animation-delay: 1s;
+}
+
+.shuffle-card:nth-child(4) {
+    animation-delay: 1.5s;
+}
+
+/* Reactive orb styles */
+.reactive-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    will-change: transform;
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1c1c1e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3c3c3e;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4c4c4e;
+}
