@@ -9,3 +9,4 @@ python-dotenv
 pandas
 plotly
 vaderSentiment
+duckduckgo-search
