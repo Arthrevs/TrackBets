@@ -6,31 +6,31 @@ import SentimentMeter from './SentimentMeter';
 const InsightCard = ({ card, isActive, progress }) => {
     const colorStyles = {
         risk: {
-            bg: 'bg-gradient-to-br from-red-500/20 via-red-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-red-500/20 via-red-600/10 to-transparent',
             border: 'border-red-500/30',
             icon: 'text-red-400',
             glow: 'shadow-[inset_0_0_30px_rgba(239,68,68,0.1)]'
         },
         opportunity: {
-            bg: 'bg-gradient-to-br from-green-500/20 via-green-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-green-500/20 via-green-600/10 to-transparent',
             border: 'border-green-500/30',
             icon: 'text-green-400',
             glow: 'shadow-[inset_0_0_30px_rgba(34,197,94,0.1)]'
         },
         warning: {
-            bg: 'bg-gradient-to-br from-orange-500/20 via-orange-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-orange-500/20 via-orange-600/10 to-transparent',
             border: 'border-orange-500/30',
             icon: 'text-orange-400',
             glow: 'shadow-[inset_0_0_30px_rgba(249,115,22,0.1)]'
         },
         sentiment: {
-            bg: 'bg-gradient-to-br from-purple-500/20 via-purple-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-purple-500/20 via-purple-600/10 to-transparent',
             border: 'border-purple-500/30',
             icon: 'text-purple-400',
             glow: 'shadow-[inset_0_0_30px_rgba(168,85,247,0.1)]'
         },
         info: {
-            bg: 'bg-gradient-to-br from-blue-500/20 via-blue-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-blue-500/20 via-blue-600/10 to-transparent',
             border: 'border-blue-500/30',
             icon: 'text-blue-400',
             glow: 'shadow-[inset_0_0_30px_rgba(59,130,246,0.1)]'
@@ -161,17 +161,17 @@ const StockDetail = ({ ticker, onBack }) => {
                 {/* 🔥 PREMIUM AI INSIGHT CARD */}
                 <div className="relative mb-8 group">
                     {/* Animated glow effect */}
-                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-blue-500 to-green-400 rounded-3xl opacity-30 blur-xl group-hover:opacity-50 transition-opacity ai-card-glow" />
+                    <div className="absolute -inset-2 bg-linear-to-r from-purple-600 via-blue-500 to-green-400 rounded-3xl opacity-30 blur-xl group-hover:opacity-50 transition-opacity ai-card-glow" />
 
                     {/* Main Card */}
-                    <div className="relative bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] rounded-2xl p-8 border border-white/10 overflow-hidden sparkle">
+                    <div className="relative bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] rounded-2xl p-8 border border-white/10 overflow-hidden sparkle">
                         {/* Shimmer overlay */}
                         <div className="absolute inset-0 shimmer opacity-50 pointer-events-none" />
 
                         {/* Header Row */}
                         <div className="flex items-center justify-between mb-6 relative">
                             <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/20">
+                                <div className="p-3 rounded-xl bg-linear-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/20">
                                     <Sparkles size={24} className="text-white" />
                                 </div>
                                 <div>
@@ -355,7 +355,7 @@ const StockDetail = ({ ticker, onBack }) => {
             </div>
 
             {/* 🔥 STICKY ACTION BUTTONS */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent z-50">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-linear-to-t from-[#050505] via-[#050505] to-transparent z-50">
                 <div className="max-w-2xl mx-auto flex gap-3">
                     <button className="flex-1 btn-sell py-4 rounded-2xl font-bold text-lg text-white">
                         SELL
