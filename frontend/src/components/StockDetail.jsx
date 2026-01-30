@@ -71,14 +71,53 @@ const InsightCard = ({ card, isActive, progress }) => {
 const StockDetail = ({ ticker, onBack }) => {
     const [activeCardIndex, setActiveCardIndex] = useState(0);
     const [cardProgress, setCardProgress] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [stockData, setStockData] = useState(null);
 
-    // Mock AI Insights - Indian market focused
+    // Fetch data from backend API
+    useEffect(() => {
+        const fetchStockData = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`https://failexe.onrender.com/api/analyze?ticker=${encodeURIComponent(ticker)}`);
+                if (!response.ok) throw new Error('API request failed');
+                const data = await response.json();
+                setStockData(data);
+                setError(null);
+            } catch (err) {
+                console.error('Failed to fetch stock data:', err);
+                setError(err.message);
+                // Use fallback mock data
+                setStockData({
+                    market_data: {
+                        price: { current: 14425.80, changePercent: 2.34 },
+                        news: [{ title: 'Market tracking active' }],
+                        social: [{ title: 'Discussion ongoing' }]
+                    },
+                    analysis: { verdict: 'WAIT', reasons: ['API unavailable'] }
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStockData();
+    }, [ticker]);
+
+    // Derive display values from API data or fallback
+    const priceData = stockData?.market_data?.price || {};
+    const currentPrice = priceData.current || 14425.80;
+    const changePercent = priceData.changePercent || 2.34;
+    const analysisVerdict = stockData?.analysis?.verdict || 'WAIT';
+    const analysisReasons = stockData?.analysis?.reasons || [];
+
+    // AI Recommendation derived from API
     const aiRecommendation = {
-        action: 'BUY',
-        confidence: 87,
-        summary: "Strong bullish signals detected. Technical indicators show oversold conditions with high institutional accumulation. Entry point optimal within next 48 hours.",
-        priceTarget: '₹16,250',
-        currentPrice: '₹14,425.80',
+        action: analysisVerdict,
+        confidence: analysisVerdict === 'BUY' ? 87 : analysisVerdict === 'SELL' ? 75 : 50,
+        summary: analysisReasons.join('. ') || "Analyzing market conditions...",
+        priceTarget: `₹${(currentPrice * 1.12).toFixed(0)}`,
+        currentPrice: `₹${currentPrice.toLocaleString()}`,
         upside: '+12.6%',
         timeframe: '3-6 months'
     };
