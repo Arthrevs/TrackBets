@@ -8,3 +8,5 @@ python-dotenv
 vaderSentiment
 pypdf
 youtube-transcript-api
+fastapi
+uvicorn
