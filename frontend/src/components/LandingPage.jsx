@@ -10,7 +10,7 @@ const LandingPage = ({ onNavigate }) => {
             title: 'Buy',
             subtitle: 'Track new positions',
             gradient: 'from-green-500/20 via-green-500/10 to-transparent',
-            iconBg: 'bg-gradient-to-br from-green-500/30 to-green-600/20',
+            iconBg: 'bg-linear-to-br from-green-500/30 to-green-600/20',
             iconColor: 'text-green-400',
             glowColor: 'group-hover:shadow-[0_0_30px_rgba(90,197,59,0.3)]',
             borderGlow: 'group-hover:border-green-500/40'
@@ -22,7 +22,7 @@ const LandingPage = ({ onNavigate }) => {
             title: 'Sell',
             subtitle: 'Plan your exit',
             gradient: 'from-red-500/20 via-red-500/10 to-transparent',
-            iconBg: 'bg-gradient-to-br from-red-500/30 to-red-600/20',
+            iconBg: 'bg-linear-to-br from-red-500/30 to-red-600/20',
             iconColor: 'text-red-400',
             glowColor: 'group-hover:shadow-[0_0_30px_rgba(255,82,82,0.3)]',
             borderGlow: 'group-hover:border-red-500/40'
@@ -34,7 +34,7 @@ const LandingPage = ({ onNavigate }) => {
             title: 'Watch',
             subtitle: 'Monitor markets',
             gradient: 'from-blue-500/20 via-blue-500/10 to-transparent',
-            iconBg: 'bg-gradient-to-br from-blue-500/30 to-blue-600/20',
+            iconBg: 'bg-linear-to-br from-blue-500/30 to-blue-600/20',
             iconColor: 'text-blue-400',
             glowColor: 'group-hover:shadow-[0_0_30px_rgba(59,130,246,0.3)]',
             borderGlow: 'group-hover:border-blue-500/40'
@@ -51,7 +51,7 @@ const LandingPage = ({ onNavigate }) => {
         <div className="min-h-screen flex flex-col items-center justify-center px-6 relative z-10 fade-in">
             {/* Background accent */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-500/5 via-blue-500/5 to-green-500/5 rounded-full blur-3xl" />
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-linear-to-br from-purple-500/5 via-blue-500/5 to-green-500/5 rounded-full blur-3xl" />
             </div>
 
             {/* Hero Section */}
@@ -83,7 +83,7 @@ const LandingPage = ({ onNavigate }) => {
                             key={option.id}
                             onClick={() => onNavigate('wizard', { type: option.type })}
                             className={`group relative flex items-center gap-4 px-6 py-4 rounded-2xl 
-                                bg-gradient-to-r ${option.gradient} 
+                                bg-linear-to-r ${option.gradient} 
                                 border border-white/10 ${option.borderGlow}
                                 ${option.glowColor}
                                 transition-all duration-300 
@@ -120,7 +120,7 @@ const LandingPage = ({ onNavigate }) => {
             </div>
 
             {/* Bottom accent line */}
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
         </div>
     );
 };
