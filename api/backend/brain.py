@@ -96,8 +96,6 @@ def generate_flashcard(ticker: str, user_context: dict, market_data: dict, deep_
         },
         "ai_explanation": "AI service unavailable. Falling back to logical analysis."
     }
-<<<<<<< HEAD
-=======
 
 class FinancialAnalyst:
     def __init__(self):
@@ -141,4 +139,3 @@ class FinancialAnalyst:
                 "verdict": "WAIT",
                 "reasons": ["AI Analysis Failed", "Try again later"]
             }
->>>>>>> Frontend
