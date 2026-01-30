@@ -1,10 +1,28 @@
-flask
-flask-cors
-yfinance
-google-generativeai
-GoogleNews
-duckduckgo-search
-python-dotenv
-vaderSentiment
-pypdf
-youtube-transcript-api
+# ============================================
+# TrackBets Backend - Production Requirements
+# ============================================
+
+# --- Core Framework ---
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+
+# --- Environment & Config ---
+python-dotenv==1.0.0
+
+# --- Financial Data ---
+yfinance==0.2.36
+
+# --- News Scraping ---
+GoogleNews==1.6.14
+
+# --- Reddit/Social ---
+praw==7.7.1
+
+# --- AI / LLM ---
+google-generativeai==0.8.5
+
+# --- HTTP & Utilities ---
+requests==2.31.0
+httpx==0.26.0
+
+# --- CORS Support (included in fastapi) ---
