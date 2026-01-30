@@ -1,0 +1,11 @@
+streamlit
+yfinance
+google-generativeai
+GoogleNews
+praw
+pypdf
+youtube-transcript-api
+python-dotenv
+pandas
+plotly
+vaderSentiment
