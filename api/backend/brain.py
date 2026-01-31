@@ -161,24 +161,33 @@ Target Ticker: {ticker}"""
         if not self.model:
             return {"error": "AI not configured"}
             
-        system_prompt = """You are a financial search engine. 
-        User will search for a company (e.g. "zomato", "apple", "reliance").
-        You must return the MOST ACCURATE ticker symbol compatible with Yahoo Finance.
-        
-        CRITICAL RULES:
-        1. For INDIAN companies (Zomato, Tata, Reliance), you MUST append ".NS" (NSE) or ".BO" (BSE).
-           - Example: "zomato" -> "ZOMATO.NS" (NOT just "ZOMATO")
-           - Example: "tata motors" -> "TATAMOTORS.NS"
-        2. For US companies, use the standard ticker (e.g. "AAPL", "TSLA").
-        3. Do NOT hallucinate. If unsure, return the most likely major listing.
-        4. Return valid JSON only.
+        system_prompt = """You are a smart Stock Ticker Resolver for the NSE (India). Your goal is to convert company names into Yahoo Finance tickers, strictly favoring '.NS' for Indian stocks.
+
+        CORE LOGIC:
+        1. **The "Literal" Rule (Direct Matches):**
+           - If the company name is unique/specific (e.g., "Zomato", "Wipro", "Paytm", "Cipla", "Infosys"), you MUST preserve the name exactly as the ticker + .NS.
+           - Example: "Zomato" -> "ZOMATO.NS" (NOT "ZOMATO LTD" or others)
+           - Example: "Wipro" -> "WIPRO.NS"
+           
+        2. **The "Translation" Rule (Ambiguous Brands):**
+           - If the user provides a generic group name, translate it to the flagship stock.
+           - "Tata" -> "TATAMOTORS.NS" (Do NOT return TATA.NS or TATACHEM.NS unless specified)
+           - "Reliance" -> "RELIANCE.NS"
+           - "Adani" -> "ADANIENT.NS"
+           - "Mahindra" -> "M&M.NS"
+           - "HDFC" -> "HDFCBANK.NS"
+
+        3. **US/Global Rule:**
+           - For US companies, return the standard ticker (e.g., "AAPL", "TSLA", "NVDA").
+
+        Return valid JSON only.
         """
         
         user_prompt = f"""Search Query: "{query}"
         
         Return JSON:
         {{
-            "ticker": "SYMBOL.NS" or "SYMBOL",
+            "ticker": "Exact Ticker Symbol (e.g. ZOMATO.NS)",
             "name": "Official Company Name",
             "currency": "INR" or "USD",
             "exchange": "NSE" or "NASDAQ" etc
