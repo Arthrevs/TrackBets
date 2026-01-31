@@ -50,7 +50,7 @@ def generate_flashcard(ticker: str, user_context: dict, market_data: dict, deep_
 
     # Configure Gemini
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+    model = genai.GenerativeModel("gemini-2.5-flash")
     
     context_str = f"""
     STOCK: {ticker}
@@ -110,7 +110,7 @@ class FinancialAnalyst:
         self.model = None
         if self.api_key:
             genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+            self.model = genai.GenerativeModel("gemini-2.5-flash")
         else:
             print("[BRAIN] Warning: GOOGLE_API_KEY not found in environment")
 
