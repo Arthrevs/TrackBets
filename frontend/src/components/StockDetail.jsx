@@ -3,7 +3,7 @@ import { ArrowUpRight, ArrowDownRight, Sparkles, AlertTriangle, TrendingUp, Tren
 import SentimentMeter from './SentimentMeter';
 
 // 🔧 KNOWN INDIAN STOCKS (without suffix)
-const KNOWN_INDIAN_STOCKS = ['ZOMATO', 'RELIANCE', 'TATA', 'INFOSYS', 'TCS', 'HDFC', 'ICICI', 'WIPRO', 'BAJAJ', 'MARUTI', 'BHARTI', 'ADANI', 'TATAMOTORS', 'SBIN', 'ITC', 'HDFCBANK', 'KOTAKBANK', 'LT', 'AXISBANK', 'SUNPHARMA', 'MOTHERSON', 'SAMVARDHANA'];
+const KNOWN_INDIAN_STOCKS = ['ETERNAL', 'ZOMATO', 'RELIANCE', 'TATA', 'INFOSYS', 'TCS', 'HDFC', 'ICICI', 'WIPRO', 'BAJAJ', 'MARUTI', 'BHARTI', 'ADANI', 'TATAMOTORS', 'SBIN', 'ITC', 'HDFCBANK', 'KOTAKBANK', 'LT', 'AXISBANK', 'SUNPHARMA', 'MOTHERSON', 'SAMVARDHANA'];
 
 // 🔧 HELPER: Check if ticker is Indian stock
 const isIndianStock = (ticker) => {
@@ -38,28 +38,19 @@ const getStockData = (ticker) => {
     // Realistic mock data for common stocks
     const stockDatabase = {
         // Indian Stocks
-        'ZOMATO.NS': {
-            price: 260.45,
-            change: 3.21,
-            changePercent: 1.25,
-            target: 310,
-            upside: 19.0,
-            marketCap: '₹2.3L Cr',
-            volume: '4.2 Cr',
+        'ETERNAL.NS': {
+            price: 265.80,
+            change: 5.35,
+            changePercent: 2.05,
+            target: 320,
+            upside: 20.0,
+            marketCap: '₹2.5L Cr',
+            volume: '5.1 Cr',
             isUp: true,
-            aiExplanation: "Zomato shows strong recovery momentum with Q3 food delivery GMV up 23% YoY. Blinkit's quick commerce segment is scaling faster than expected with 80% YoY growth. The stock is trading at a discount to Swiggy despite better unit economics. Reddit sentiment is overwhelmingly bullish with ~78% positive mentions. News flow around potential profitability in FY25 is driving institutional interest."
+            aiExplanation: "Eternal Ltd (formerly Zomato) is dominating. The rebrand marks a shift to a broader conglomerate structure. Blinkit is cash-flow positive. Strong buy ratings from major brokerages."
         },
-        'ZOMATO.BO': {
-            price: 260.45,
-            change: 3.21,
-            changePercent: 1.25,
-            target: 310,
-            upside: 19.0,
-            marketCap: '₹2.3L Cr',
-            volume: '4.2 Cr',
-            isUp: true,
-            aiExplanation: "Zomato shows strong recovery momentum with Q3 food delivery GMV up 23% YoY. Blinkit's quick commerce segment is scaling faster than expected with 80% YoY growth. The stock is trading at a discount to Swiggy despite better unit economics. Reddit sentiment is overwhelmingly bullish with ~78% positive mentions. News flow around potential profitability in FY25 is driving institutional interest."
-        },
+        'ZOMATO.NS': { price: 265.80, change: 5.35, changePercent: 2.05, target: 320, upside: 20.0, marketCap: '₹2.5L Cr', volume: '5.1 Cr', isUp: true, aiExplanation: "Detailed as Eternal Ltd." },
+        'ZOMATO.BO': { price: 265.80, change: 5.35, changePercent: 2.05, target: 320, upside: 20.0, marketCap: '₹2.5L Cr', volume: '5.1 Cr', isUp: true, aiExplanation: "Detailed as Eternal Ltd." },
         'RELIANCE.NS': {
             price: 1285.30,
             change: 15.40,

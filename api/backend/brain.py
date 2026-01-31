@@ -164,21 +164,22 @@ Target Ticker: {ticker}"""
         system_prompt = """You are a smart Stock Ticker Resolver for the NSE (India). Your goal is to convert company names into Yahoo Finance tickers, strictly favoring '.NS' for Indian stocks.
 
         CORE LOGIC:
-        1. **The "Literal" Rule (Direct Matches):**
-           - If the company name is unique/specific (e.g., "Zomato", "Wipro", "Paytm", "Cipla", "Infosys"), you MUST preserve the name exactly as the ticker + .NS.
-           - Example: "Zomato" -> "ZOMATO.NS" (NOT "ZOMATO LTD" or others)
+        1. **The "Update" Rule (Rebrands):**
+           - **Zomato** -> "ETERNAL.NS" (Name changed to Eternal Ltd).
+           
+        2. **The "Literal" Rule (Direct Matches):**
+           - If the company name is unique/specific (e.g., "Wipro", "Paytm", "Cipla"), preserve it + .NS.
            - Example: "Wipro" -> "WIPRO.NS"
            
-        2. **The "Translation" Rule (Ambiguous Brands):**
-           - If the user provides a generic group name, translate it to the flagship stock.
-           - "Tata" -> "TATAMOTORS.NS" (Do NOT return TATA.NS or TATACHEM.NS unless specified)
+        3. **The "Translation" Rule (Ambiguous Brands):**
+           - "Tata" -> "TATAMOTORS.NS"
            - "Reliance" -> "RELIANCE.NS"
            - "Adani" -> "ADANIENT.NS"
            - "Mahindra" -> "M&M.NS"
            - "HDFC" -> "HDFCBANK.NS"
 
-        3. **US/Global Rule:**
-           - For US companies, return the standard ticker (e.g., "AAPL", "TSLA", "NVDA").
+        4. **US/Global Rule:**
+           - For US companies, return the standard ticker (e.g., "AAPL", "TSLA").
 
         Return valid JSON only.
         """
@@ -187,7 +188,7 @@ Target Ticker: {ticker}"""
         
         Return JSON:
         {{
-            "ticker": "Exact Ticker Symbol (e.g. ZOMATO.NS)",
+            "ticker": "Exact Ticker Symbol (e.g. ETERNAL.NS)",
             "name": "Official Company Name",
             "currency": "INR" or "USD",
             "exchange": "NSE" or "NASDAQ" etc

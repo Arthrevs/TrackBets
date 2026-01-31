@@ -50,39 +50,35 @@ app.add_middleware(
 # MOCK DATA SAFETY NET (for demo reliability)
 # ============================================================================
 MOCK_DB = {
-    "ZOMATO.NS": {
-        "ticker": "ZOMATO.NS",
+    "ETERNAL.NS": {
+        "ticker": "ETERNAL.NS",
         "price_data": {
-            "price": 260.45,
-            "change_percent": 2.34,
+            "price": 265.80,
+            "change_percent": 4.12,
             "is_up": True,
             "currency": "₹",
-            "name": "Zomato Limited",
-            "market_cap": 229000000000,
-            "52_week_high": 304.50,
-            "52_week_low": 108.30
+            "name": "Eternal Limited (formerly Zomato)",
+            "market_cap": 245000000000,
+            "52_week_high": 310.00,
+            "52_week_low": 120.50
         },
-        "news": "1. [ET] Zomato Q3 profit jumps 280% on strong food delivery growth\n2. [Moneycontrol] Zomato Blinkit revenue surges 120% YoY\n3. [NDTV] Zomato hits all-time high as FIIs increase stake\n4. [Bloomberg] Zomato expands quick commerce with 10-min delivery\n5. [Reuters] Zomato CEO bullish on India's food delivery market",
-        "social": "1. [r/IndianStreetBets] (🟢 Bullish) Zomato flying! Target 300 soon | ⬆️ 542\n2. [r/IndianStreetBets] (🟢 Bullish) Zomato is the Amazon of India food | ⬆️ 328\n3. [r/stocks] (🟢 Bullish) Why Indian food delivery is the next big thing | ⬆️ 156",
+        "news": "1. [ET] Eternal Ltd (Zomato) profits soar after rebranding\n2. [Moneycontrol] Blinkit growth drives Eternal's valuation re-rating\n3. [Mint] Eternal to join Nifty 50 index soon",
+        "social": "1. [r/IndianStreetBets] (🟢 Bullish) Eternal (Zomato) is the new titan | ⬆️ 600",
         "analysis": {
             "verdict": "BUY",
-            "confidence": 87,
-            "reasons": [
-                "Strong Q3 results with 280% profit growth YoY",
-                "Blinkit quick commerce showing explosive 120% revenue growth",
-                "Positive institutional activity - FIIs increasing stake",
-                "Trading near 52-week high with strong momentum",
-                "Market leader in India's growing food delivery segment"
-            ],
-            "ai_explanation": "Zomato presents a compelling BUY opportunity. The company has achieved profitability inflection with Q3 profits surging 280%. Blinkit's quick commerce is a major growth driver. Strong institutional buying and bullish social sentiment (85%+) support the uptrend. Entry at current levels offers solid risk-reward for 6-12 month horizon.",
+            "confidence": 90,
+            "reasons": ["Successful rebranding to Eternal", "Market dominance confirmed", "Profitable quarters continuing"],
+            "ai_explanation": "Eternal Ltd (ex-Zomato) is firing on all cylinders. The rebrand reflects its evolution into a conglomerate. Strong buy.",
             "risk_level": "MEDIUM",
-            "target_price": 300.00,
-            "timeframe": "Medium-term"
+            "target_price": 320.00,
+            "timeframe": "Long-term"
         }
     },
+    "ZOMATO.NS": {
+        "redirect": "ETERNAL.NS"
+    },
     "ZOMATO": {
-        # Alias for ease of use
-        "redirect": "ZOMATO.NS"
+        "redirect": "ETERNAL.NS"
     },
     "TSLA": {
         "ticker": "TSLA",
