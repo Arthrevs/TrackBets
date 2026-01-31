@@ -1,41 +1,38 @@
-📈 TrackBets: AI-Powered Financial Analyst
-TrackBets is a full-stack financial intelligence platform that combines real-time data scraping, social sentiment analysis, and Large Language Models (LLM) to deliver actionable "Buy/Sell/Hold" verdicts for retail investors.
+📈 TrackBets: AI-Driven Financial Intelligence
+TrackBets is a full-stack financial analysis prototype designed to bridge the gap between complex market data and retail investor decision-making. By synthesizing simulated market feeds with AI-driven sentiment analysis, TrackBets provides a clear, actionable "Buy/Sell/Hold" roadmap.
 
 🚀 [Live Demo Link] | 📊 [Presentation / Pitch Deck Link]
 
 🛠️ The Tech Stack
-Frontend: React.js with Vite, styled with a high-fidelity "Neon-Dark" UI for maximum readability.
+Frontend: React.js + Vite, featuring a high-fidelity "Neon-Dark" UI for a premium trading desk experience.
 
-Backend: FastAPI (Python) hosted on Render, designed for high-concurrency asynchronous data processing.
+Backend: FastAPI (Python) hosted on Render, architected for high-performance asynchronous processing.
 
-Intelligence: Google Gemini 1.5 Pro API for complex financial reasoning and sentiment synthesis.
+AI Engine: OpenAI GPT-4 Integration, optimized for financial reasoning and sentiment synthesis (Pivoted from initial Gemini architecture for enhanced demo stability).
 
-Data Layer: * yfinance for real-time NSE/BSE market pricing.
-
-BeautifulSoup & GoogleNews for live financial news scraping.
-
-PRAW (Reddit API) for gauging retail investor sentiment.
+Data Strategy: A hybrid approach using simulated real-time data feeds and mock datasets to demonstrate full-cycle analysis without API latency during the pitch.
 
 ✨ Key Features
-Real-time Analysis: Fetches live data to provide instant verdicts on tickers like ZOMATO.NS or TSLA.
+Dynamic Analysis: Processes tickers (e.g., ZOMATO.NS, TSLA) through a multi-step financial brain.
 
-Strategy Wizard: Guided workflow to help users define entry prices, investment goals (Long-term vs. Quick Scalp), and risk tolerance.
+Strategy Wizard: User-centric workflow to define entry targets and investment timeframes (Quick Scalp vs. Long-Term).
 
-Sentiment Engine: Aggregates data from social media and news to calculate a "Bullish vs. Bearish" percentage.
+Sentiment Synthesis: Mimics the aggregation of news and social media trends to provide a "Market Pulse" percentage.
 
-AI Insights: Provides a natural language summary explaining the why behind every recommendation.
+Actionable Verdicts: Delivers a final Buy/Sell recommendation backed by an AI-generated explanation of the logic.
 
-⚙️ Architecture & Deployment
-The project is architected using a decoupled service model to ensure scalability and bypass execution timeouts:
+🗺️ Future Roadmap
+Live API Integration: Transition from mock data to production-grade market feeds (Polygon.io / Zerodha Kite).
 
-Backend (The Brain): Deployed as a Web Service on Render, handling heavy computation and API calls.
+Portfolio Tracking: Real-time P&L tracking via brokerage API connections.
 
-Frontend (The Face): Deployed as a Static Site on Render, optimized for low-latency user interactions.
+Advanced ML Models: Implementing custom-trained models for technical indicator prediction.
 
 👥 The Team
 
-Arindam Nath - Backend Architect & AI Integration
 
-Debanga Shivam - Lead Frontend Engineer & UI Designer
+Arindam Nath – Backend Architect & AI Integration: Engineered the FastAPI infrastructure and migrated the LLM logic from Gemini to OpenAI.
 
-Meghank Dutta - Data Scientist & Financial Analyst
+Debanga Shivam – Lead Frontend Engineer & UI/UX: Designed and developed the high-fidelity React interface and "Strategy Wizard" workflow.
+
+Meghank Sanjib Dutta – Data Scientist & Financial Analyst: Specialized in sentiment analysis parameters and validating the financial logic of the verdict engine.
