@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpRight, ArrowDownRight, Sparkles, AlertTriangle, TrendingUp, TrendingDown, Shield, Zap, BarChart3, Users, Target, Clock, Brain, MessageSquare } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Sparkles, AlertTriangle, TrendingUp, TrendingDown, Shield, Zap, BarChart3, Users, Target, Clock, Brain, MessageSquare, RefreshCw } from 'lucide-react';
 import SentimentMeter from './SentimentMeter';
 
 // 🔧 HELPER: Get currency symbol based on ticker
@@ -211,6 +211,7 @@ const InsightCard = ({ card, isActive, progress }) => {
     );
 };
 
+<<<<<<< HEAD
 const StockDetail = ({ ticker, wizardData, onBack }) => {
     const [activeCardIndex, setActiveCardIndex] = useState(0);
     const [cardProgress, setCardProgress] = useState(0);
@@ -234,6 +235,42 @@ const StockDetail = ({ ticker, wizardData, onBack }) => {
         strategy: wizardData?.priceStrategy || null,
         targetEntry: wizardData?.target_price || null,
         investmentGoal: wizardData?.strategy || null
+=======
+const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }) => {
+    const [activeCardIndex, setActiveCardIndex] = useState(0);
+    const [cardProgress, setCardProgress] = useState(0);
+
+    // Derive data from API response
+    const priceData = analysisData?.market_data?.price || {};
+    const currentPrice = priceData.current || null;
+    const previousClose = priceData.previous_close || null;
+    const priceChange = currentPrice && previousClose
+        ? ((currentPrice - previousClose) / previousClose * 100).toFixed(2)
+        : null;
+
+    // AI Analysis from backend
+    const aiAnalysis = analysisData?.analysis || {};
+
+    // Format price display
+    const formatPrice = (price) => {
+        if (!price) return '—';
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        }).format(price);
+    };
+
+    // AI Recommendation - from API or loading state
+    const aiRecommendation = {
+        action: aiAnalysis.recommendation || (isLoading ? 'ANALYZING...' : 'N/A'),
+        confidence: aiAnalysis.confidence || (isLoading ? 0 : 0),
+        summary: aiAnalysis.summary || (isLoading ? "Analyzing market data, news, and social sentiment..." : (error ? `Error: ${error}` : "Complete the analysis to see AI insights")),
+        priceTarget: aiAnalysis.price_target ? formatPrice(aiAnalysis.price_target) : '—',
+        currentPrice: formatPrice(currentPrice),
+        upside: aiAnalysis.upside || '—',
+        timeframe: aiAnalysis.timeframe || '—'
+>>>>>>> 7914fa05655e2eb5505207afd48bb2e403fef630
     };
 
     // Shuffling cards data
@@ -284,6 +321,7 @@ const StockDetail = ({ ticker, wizardData, onBack }) => {
         return () => clearInterval(interval);
     }, [insightCards.length]);
 
+<<<<<<< HEAD
     const colorClass = stockData.isUp ? 'text-[#5ac53b]' : 'text-[#ff5252]';
     const strokeColor = stockData.isUp ? '#5ac53b' : '#ff5252';
     const ArrowIcon = stockData.isUp ? ArrowUpRight : ArrowDownRight;
@@ -311,18 +349,54 @@ const StockDetail = ({ ticker, wizardData, onBack }) => {
     };
 
     const strategyDisplay = getStrategyText();
+=======
+    const isUp = priceChange !== null ? parseFloat(priceChange) >= 0 : true;
+    const colorClass = isUp ? 'text-[#5ac53b]' : 'text-[#ff5252]';
+    const strokeColor = isUp ? '#5ac53b' : '#ff5252';
+    const ArrowIcon = isUp ? ArrowUpRight : ArrowDownRight;
+>>>>>>> 7914fa05655e2eb5505207afd48bb2e403fef630
 
     return (
         <div className="min-h-screen bg-[#050505] text-white relative z-20 overflow-y-auto pb-32 pt-20 fade-in">
             <div className="px-6 max-w-2xl mx-auto">
 
+                {/* Loading Overlay */}
+                {isLoading && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+                        <div className="text-center">
+                            <RefreshCw size={48} className="text-purple-400 animate-spin mx-auto mb-4" />
+                            <p className="text-xl font-semibold">Analyzing {ticker}...</p>
+                            <p className="text-gray-400 text-sm mt-2">Fetching market data, news, and sentiment</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Error Banner */}
+                {error && !isLoading && (
+                    <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <AlertTriangle size={24} className="text-red-400" />
+                            <span className="text-red-300">{error}</span>
+                        </div>
+                        <button
+                            onClick={onRetry}
+                            className="px-4 py-2 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-white font-semibold transition-colors flex items-center gap-2"
+                        >
+                            <RefreshCw size={16} /> Retry
+                        </button>
+                    </div>
+                )}
+
                 {/* Header with live indicator */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                            <span className="text-gray-500 font-bold text-xs uppercase tracking-widest">LIVE</span>
+                            <span className={`w-2 h-2 rounded-full ${isLoading ? 'bg-yellow-400' : 'bg-green-400'} animate-pulse`} />
+                            <span className="text-gray-500 font-bold text-xs uppercase tracking-widest">
+                                {isLoading ? 'LOADING' : 'LIVE'}
+                            </span>
                         </div>
+<<<<<<< HEAD
                         <h1 className="text-4xl font-bold">{ticker || "RELIANCE.NS"}</h1>
                     </div>
                     <div className="text-right">
@@ -330,6 +404,17 @@ const StockDetail = ({ ticker, wizardData, onBack }) => {
                         <div className={`flex items-center gap-1 justify-end text-sm font-bold ${colorClass}`}>
                             <ArrowIcon size={16} />
                             <span>{stockData.isUp ? '+' : ''}{stockData.changePercent.toFixed(2)}% today</span>
+=======
+                        <h1 className="text-4xl font-bold">{ticker || "STOCK"}</h1>
+                    </div>
+                    <div className="text-right">
+                        <div className="text-3xl font-mono font-bold">
+                            {currentPrice ? formatPrice(currentPrice) : (isLoading ? '...' : '—')}
+                        </div>
+                        <div className={`flex items-center gap-1 justify-end text-sm font-bold ${colorClass}`}>
+                            <ArrowIcon size={16} />
+                            <span>{priceChange !== null ? `${isUp ? '+' : ''}${priceChange}% today` : '—'}</span>
+>>>>>>> 7914fa05655e2eb5505207afd48bb2e403fef630
                         </div>
                     </div>
                 </div>
