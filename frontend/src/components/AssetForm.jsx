@@ -32,7 +32,11 @@ const AssetForm = ({ intent, onComplete, onBack }) => {
   };
 
   const handleFinish = () => {
-    onComplete(formData.ticker);
+    // Pass full form data including price strategy
+    onComplete({
+      ...formData,
+      priceStrategy: priceStrategy
+    });
   };
 
   // Price strategy options
