@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv
 
 # Import backend logic
-from api.backend.scrapers import get_stock_price, get_news, get_reddit_posts, get_twitter_sentiment
+from api.backend.scrapers import get_stock_price, get_news, get_reddit_posts
 from api.backend.brain import FinancialAnalyst
 
 # Init
