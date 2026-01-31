@@ -1,16 +1,106 @@
 """
+<<<<<<< HEAD
 TrackBets Backend - AI Brain Module
 =====================================
 Gemini-powered financial analysis with strict JSON output.
+=======
+Brain module with Rule-Based Fallback & Retry Logic
+Using OpenAI API
+>>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
 """
 
 import os
 import json
 from typing import Dict, Optional
 from dotenv import load_dotenv
+<<<<<<< HEAD
+=======
+from openai import OpenAI
+>>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
 
 load_dotenv()
 
+<<<<<<< HEAD
+=======
+    if sentiment > 0.4 and pe < 50:
+        return "BUY", ["Strong positive sentiment", "Attractive valuation"]
+    elif sentiment < -0.2 or pe > 100:
+        return "SELL", ["Negative sentiment trend", "Valuation concerns"]
+    else:
+        return "WAIT", ["Mixed indicators", "Fairly valued"]
+
+def generate_flashcard(ticker: str, user_context: dict, market_data: dict, deep_analysis: dict) -> dict:
+    
+    load_dotenv()
+    api_key = os.getenv("OPENAI_API_KEY")
+    
+    # Use Fallback if no key
+    if not api_key:
+        signal, reasons = rule_based_verdict(market_data)
+        return {
+            "verdict": {"signal": signal, "confidence": 50, "action": "Review Fundamentals (Fallback)"},
+            "flashcard": {
+                "title": f"Algorithm Signal: {signal}",
+                "reasons": reasons + ["AI unavailable (Rule-based)"],
+                "evidence": {"key_data_points": [f"Sentiment: {market_data.get('sentiment', {}).get('overall_score')}", f"PE: {market_data.get('price', {}).get('pe')}"]}
+            },
+            "ai_explanation": "Verdict generated using rule-based metrics due to missing AI key."
+        }
+
+    # Configure OpenAI
+    client = OpenAI(api_key=api_key)
+    
+    context_str = f"""
+    STOCK: {ticker}
+    PRICE: {market_data.get('price', {}).get('current')}
+    PE RATIO: {market_data.get('price', {}).get('pe')}
+    SENTIMENT_SCORE: {market_data.get('sentiment', {}).get('overall_score')} (-1 to 1)
+    
+    NEWS: {[n['title'] for n in market_data.get('sentiment', {}).get('news', {}).get('items', [])]}
+    DEEP DATA: {deep_analysis}
+    """
+    
+    prompt = f"""
+    Act as a hedge fund analyst.
+    DATA: {context_str}
+    
+    TASK: Return VALID JSON verdict.
+    {{
+      "verdict": {{ "signal": "BUY|SELL|WAIT", "confidence": 0-100, "action": "..." }},
+      "flashcard": {{ "title": "...", "reasons": ["...", "...", "..."], "evidence": {{ "key_data_points": ["..."] }} }},
+      "ai_explanation": "..."
+    }}
+    """
+    
+    # Retry Logic (3 attempts)
+    for attempt in range(3):
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a hedge fund analyst. Always respond with valid JSON only."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=1000
+            )
+            clean_text = response.choices[0].message.content.replace("```json", "").replace("```", "").strip()
+            return json.loads(clean_text)
+        except:
+            time.sleep(1)
+            
+    # Final Fallback after retries
+    signal, reasons = rule_based_verdict(market_data)
+    return {
+        "verdict": {"signal": signal, "confidence": 40, "action": "Caution Recommended"},
+        "flashcard": {
+            "title": "AI Busy, Showing Rules",
+            "reasons": reasons, 
+            "evidence": {"key_data_points": ["AI Request Timed Out", "Using Logic Fallback"]}
+        },
+        "ai_explanation": "AI service unavailable. Falling back to logical analysis."
+    }
+>>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
 
 # ============================================================================
 # FINANCIAL ANALYST CLASS
@@ -22,6 +112,7 @@ class FinancialAnalyst:
     """
     
     def __init__(self):
+<<<<<<< HEAD
         self.api_key = os.getenv("GOOGLE_API_KEY")
         self.model = None
         self._initialize_model()
@@ -53,6 +144,16 @@ class FinancialAnalyst:
             self.model = None
     
     def analyze(self, context: str, analysis_type: str = "Investment Decision") -> Dict:
+=======
+        load_dotenv()
+        api_key = os.getenv("OPENAI_API_KEY")
+        if api_key:
+            self.client = OpenAI(api_key=api_key)
+        else:
+            self.client = None
+
+    def analyze(self, context_str: str, query: str) -> dict:
+>>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
         """
         Analyze financial data and return structured verdict.
         
@@ -63,6 +164,7 @@ class FinancialAnalyst:
         Returns:
             Dict with verdict, confidence, reasons, and explanation
         """
+<<<<<<< HEAD
         if not self.model:
             return self._fallback_response("AI model not available")
         
@@ -223,3 +325,42 @@ Additional Data:
 # EXPORTS
 # ============================================================================
 __all__ = ['FinancialAnalyst', 'quick_analyze']
+=======
+        if not self.client:
+            # Return dummy structure matching expectation
+            return {
+                "verdict": "WAIT",
+                "reasons": ["API Key Missing", "Using Mock Fallback"]
+            }
+
+        prompt = f"""
+        Act as a hedge fund analyst.
+        CONTEXT: {context_str}
+        USER QUERY: {query}
+        
+        TASK: Return VALID JSON.
+        {{
+          "verdict": "BUY|SELL|WAIT",
+          "reasons": ["Reason 1", "Reason 2"]
+        }}
+        """
+        
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a hedge fund analyst. Always respond with valid JSON only."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=500
+            )
+            clean_text = response.choices[0].message.content.replace("```json", "").replace("```", "").strip()
+            return json.loads(clean_text)
+        except:
+            return {
+                "verdict": "WAIT",
+                "reasons": ["AI Analysis Failed", "Try again later"]
+            }
+
+>>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
