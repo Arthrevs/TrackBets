@@ -1,0 +1,218 @@
+/* App-specific styles - extends index.css */
+
+/* ===== PREMIUM AI CARD GLOW ===== */
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 30px rgba(139, 92, 246, 0.3),
+            0 0 60px rgba(139, 92, 246, 0.15),
+            inset 0 0 30px rgba(139, 92, 246, 0.05);
+    }
+
+    50% {
+        box-shadow:
+            0 0 50px rgba(139, 92, 246, 0.5),
+            0 0 100px rgba(139, 92, 246, 0.25),
+            inset 0 0 40px rgba(139, 92, 246, 0.1);
+    }
+}
+
+.ai-card-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Rainbow border glow */
+@keyframes rainbow-glow {
+    0% {
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+
+    33% {
+        box-shadow: 0 0 30px rgba(90, 197, 59, 0.4), 0 0 60px rgba(90, 197, 59, 0.2);
+    }
+
+    66% {
+        box-shadow: 0 0 30px rgba(0, 212, 255, 0.4), 0 0 60px rgba(0, 212, 255, 0.2);
+    }
+
+    100% {
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+}
+
+.rainbow-glow {
+    animation: rainbow-glow 6s ease-in-out infinite;
+}
+
+/* ===== CARD SHUFFLING ===== */
+@keyframes card-shuffle {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-8px) scale(1.02);
+    }
+}
+
+.shuffle-card {
+    animation: card-shuffle 4s ease-in-out infinite;
+}
+
+.shuffle-card:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.shuffle-card:nth-child(3) {
+    animation-delay: 1s;
+}
+
+.shuffle-card:nth-child(4) {
+    animation-delay: 1.5s;
+}
+
+/* ===== INSIGHT CARD TRANSITIONS ===== */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.insight-enter {
+    animation: slideInUp 0.5s ease-out forwards;
+}
+
+/* ===== REACTIVE ORB ===== */
+.reactive-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    will-change: transform;
+}
+
+/* ===== SPARKLE EFFECT ===== */
+@keyframes sparkle {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.sparkle::before,
+.sparkle::after {
+    content: '✦';
+    position: absolute;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+.sparkle::before {
+    top: 10%;
+    left: 90%;
+    animation-delay: 0.5s;
+}
+
+.sparkle::after {
+    top: 80%;
+    left: 5%;
+    animation-delay: 1.5s;
+}
+
+/* ===== CHART LINE ANIMATION ===== */
+@keyframes drawLine {
+    from {
+        stroke-dashoffset: 1000;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.chart-line-animated {
+    stroke-dasharray: 1000;
+    animation: drawLine 2s ease-out forwards;
+}
+
+/* ===== PREMIUM SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3c3c3e, #2c2c2e);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #5c5c5e, #4c4c4e);
+}
+
+/* ===== ACTION BUTTON STYLES ===== */
+.btn-buy {
+    background: linear-gradient(135deg, #5ac53b 0%, #4ab52b 100%);
+    box-shadow: 0 4px 20px rgba(90, 197, 59, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-buy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(90, 197, 59, 0.4);
+}
+
+.btn-buy:active {
+    transform: translateY(0);
+}
+
+.btn-sell {
+    background: linear-gradient(135deg, #ff5252 0%, #e04545 100%);
+    box-shadow: 0 4px 20px rgba(255, 82, 82, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-sell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255, 82, 82, 0.4);
+}
+
+.btn-sell:active {
+    transform: translateY(0);
+}
+
+/* ===== PROGRESS TIMER BAR ===== */
+@keyframes progressTimer {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+.progress-timer {
+    animation: progressTimer 4s linear infinite;
+}
