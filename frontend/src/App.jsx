@@ -7,7 +7,8 @@ import StockDetail from './components/StockDetail';
 import AILoadingScreen from './components/AILoadingScreen';
 
 // API Base URL - change this if your backend URL is different
-const API_BASE_URL = 'https://failexe.onrender.com';
+// API Base URL - empty string for relative path (works for both local main.py and production)
+const API_BASE_URL = '';
 
 function App() {
   const [view, setView] = useState('landing'); // landing | wizard | loading | detail
@@ -20,16 +21,16 @@ function App() {
 
   // API Handler - Fetches analysis from Python backend
   const handleAnalyze = async (ticker) => {
-    console.log("🚀 Sending request to backend...");
+    console.log("🚀 Sending request to backend for:", ticker);
     setIsLoading(true);
     setError(null);
     setAnalysisData(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/analyze`, {
-        method: "POST",
+      // Use GET request with ticker as query parameter (matching FastAPI endpoint)
+      const response = await fetch(`${API_BASE_URL}/api/analyze?ticker=${encodeURIComponent(ticker)}`, {
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker: ticker }),
       });
 
       if (!response.ok) {

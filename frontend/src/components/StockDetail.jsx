@@ -1,21 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowUpRight, ArrowDownRight, Sparkles, AlertTriangle, TrendingUp, TrendingDown, Shield, Zap, BarChart3, Users, Target, Clock, Brain, MessageSquare, RefreshCw } from 'lucide-react';
 import SentimentMeter from './SentimentMeter';
 
+// 🔧 KNOWN INDIAN STOCKS (without suffix)
+const KNOWN_INDIAN_STOCKS = ['ZOMATO', 'RELIANCE', 'TATA', 'INFOSYS', 'TCS', 'HDFC', 'ICICI', 'WIPRO', 'BAJAJ', 'MARUTI', 'BHARTI', 'ADANI', 'TATAMOTORS', 'SBIN', 'ITC', 'HDFCBANK', 'KOTAKBANK', 'LT', 'AXISBANK', 'SUNPHARMA'];
+
+// 🔧 HELPER: Check if ticker is Indian stock
+const isIndianStock = (ticker) => {
+    if (!ticker) return true;
+    const upperTicker = ticker.toUpperCase();
+    // Check for .NS (NSE) or .BO (BSE) suffix
+    if (upperTicker.includes('.NS') || upperTicker.includes('.BO')) {
+        return true;
+    }
+    // Check if it's a known Indian stock without suffix
+    return KNOWN_INDIAN_STOCKS.some(stock => upperTicker.includes(stock));
+};
+
 // 🔧 HELPER: Get currency symbol based on ticker
 const getCurrencySymbol = (ticker) => {
-    if (!ticker) return '₹';
-    const upperTicker = ticker.toUpperCase();
-    // Indian stocks have .NS (NSE) or .BO (BSE) suffix
-    if (upperTicker.includes('.NS') || upperTicker.includes('.BO')) {
-        return '₹';
-    }
-    // Everything else is assumed US stocks
-    return '$';
+    return isIndianStock(ticker) ? '₹' : '$';
 };
 
 // 🔧 HELPER: Format price with currency
-const formatPrice = (price, ticker) => {
+const formatPriceWithCurrency = (price, ticker) => {
     const symbol = getCurrencySymbol(ticker);
     if (symbol === '₹') {
         return `₹${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -23,7 +31,7 @@ const formatPrice = (price, ticker) => {
     return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-// 🔧 HELPER: Get realistic mock data per ticker
+// 🔧 HELPER: Get realistic mock data per ticker (fallback when API fails)
 const getStockData = (ticker) => {
     const upperTicker = ticker?.toUpperCase() || 'RELIANCE.NS';
 
@@ -121,27 +129,41 @@ const getStockData = (ticker) => {
         }
     };
 
-    // Return specific stock data or generate random realistic data
+    // Try exact match first
     if (stockDatabase[upperTicker]) {
         return stockDatabase[upperTicker];
     }
 
-    // For unknown tickers, generate realistic random data
-    const isIndian = upperTicker.includes('.NS') || upperTicker.includes('.BO');
-    const basePrice = isIndian ? Math.random() * 2000 + 100 : Math.random() * 500 + 50;
-    const changePercent = (Math.random() - 0.4) * 5; // Slight bullish bias
+    // Try matching without suffix for Indian stocks (ZOMATO -> ZOMATO.NS)
+    const baseTickerName = upperTicker.replace(/\.(NS|BO)$/, '');
+    const matchedKey = Object.keys(stockDatabase).find(key => {
+        const keyBase = key.replace(/\.(NS|BO)$/, '');
+        return keyBase === baseTickerName || keyBase === upperTicker;
+    });
+
+    if (matchedKey) {
+        return stockDatabase[matchedKey];
+    }
+
+    // For unknown tickers, generate DETERMINISTIC data based on ticker hash (not random!)
+    const tickerIsIndian = isIndianStock(upperTicker);
+
+    // Use ticker hash for deterministic values
+    const hash = upperTicker.split('').reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
+    const basePrice = tickerIsIndian ? 100 + (hash % 2000) : 50 + (hash % 450);
+    const changePercent = ((hash % 100) - 40) / 20; // -2% to +3%
     const isUp = changePercent > 0;
 
     return {
         price: basePrice,
         change: basePrice * (changePercent / 100),
         changePercent: changePercent,
-        target: basePrice * (1 + Math.random() * 0.2),
-        upside: Math.random() * 20 + 5,
-        marketCap: isIndian ? `₹${(Math.random() * 10 + 0.5).toFixed(1)}L Cr` : `$${(Math.random() * 500 + 10).toFixed(0)}B`,
-        volume: isIndian ? `${(Math.random() * 5 + 0.5).toFixed(1)} Cr` : `${(Math.random() * 50 + 5).toFixed(0)}M`,
+        target: basePrice * (1 + (hash % 20) / 100),
+        upside: 5 + (hash % 20),
+        marketCap: tickerIsIndian ? `₹${((hash % 100) / 10 + 0.5).toFixed(1)}L Cr` : `$${(hash % 500 + 10)}B`,
+        volume: tickerIsIndian ? `${((hash % 50) / 10 + 0.5).toFixed(1)} Cr` : `${(hash % 50 + 5)}M`,
         isUp: isUp,
-        aiExplanation: `Analysis for ${upperTicker}: Technical indicators suggest ${isUp ? 'bullish' : 'bearish'} momentum with RSI at ${(Math.random() * 30 + 35).toFixed(0)}. Social sentiment analysis from Reddit and Twitter shows ${isUp ? 'positive' : 'mixed'} tone. Recent news flow has been ${isUp ? 'favorable' : 'neutral'}. Institutional activity shows ${isUp ? 'accumulation' : 'distribution'} patterns. Consider position sizing based on your risk tolerance.`
+        aiExplanation: `Analysis for ${upperTicker}: Technical indicators suggest ${isUp ? 'bullish' : 'bearish'} momentum. Social sentiment analysis from Reddit and Twitter shows ${isUp ? 'positive' : 'mixed'} tone. Recent news flow has been ${isUp ? 'favorable' : 'neutral'}. Institutional activity shows ${isUp ? 'accumulation' : 'distribution'} patterns. Consider position sizing based on your risk tolerance.`
     };
 };
 
@@ -149,31 +171,31 @@ const getStockData = (ticker) => {
 const InsightCard = ({ card, isActive, progress }) => {
     const colorStyles = {
         risk: {
-            bg: 'bg-linear-to-br from-red-500/20 via-red-600/10 to-transparent',
+            bg: 'bg-gradient-to-br from-red-500/20 via-red-600/10 to-transparent',
             border: 'border-red-500/30',
             icon: 'text-red-400',
             glow: 'shadow-[inset_0_0_30px_rgba(239,68,68,0.1)]'
         },
         opportunity: {
-            bg: 'bg-linear-to-br from-green-500/20 via-green-600/10 to-transparent',
+            bg: 'bg-gradient-to-br from-green-500/20 via-green-600/10 to-transparent',
             border: 'border-green-500/30',
             icon: 'text-green-400',
             glow: 'shadow-[inset_0_0_30px_rgba(34,197,94,0.1)]'
         },
         warning: {
-            bg: 'bg-linear-to-br from-orange-500/20 via-orange-600/10 to-transparent',
+            bg: 'bg-gradient-to-br from-orange-500/20 via-orange-600/10 to-transparent',
             border: 'border-orange-500/30',
             icon: 'text-orange-400',
             glow: 'shadow-[inset_0_0_30px_rgba(249,115,22,0.1)]'
         },
         sentiment: {
-            bg: 'bg-linear-to-br from-purple-500/20 via-purple-600/10 to-transparent',
+            bg: 'bg-gradient-to-br from-purple-500/20 via-purple-600/10 to-transparent',
             border: 'border-purple-500/30',
             icon: 'text-purple-400',
             glow: 'shadow-[inset_0_0_30px_rgba(168,85,247,0.1)]'
         },
         info: {
-            bg: 'bg-linear-to-br from-blue-500/20 via-blue-600/10 to-transparent',
+            bg: 'bg-gradient-to-br from-blue-500/20 via-blue-600/10 to-transparent',
             border: 'border-blue-500/30',
             icon: 'text-blue-400',
             glow: 'shadow-[inset_0_0_30px_rgba(59,130,246,0.1)]'
@@ -211,42 +233,27 @@ const InsightCard = ({ card, isActive, progress }) => {
     );
 };
 
-<<<<<<< HEAD
-const StockDetail = ({ ticker, wizardData, onBack }) => {
-    const [activeCardIndex, setActiveCardIndex] = useState(0);
-    const [cardProgress, setCardProgress] = useState(0);
-
-    // 🔥 Get dynamic stock data based on ticker
-    const stockData = getStockData(ticker);
-    const currencySymbol = getCurrencySymbol(ticker);
-
-    // 🔥 Dynamic AI Recommendation based on stock data
-    const aiRecommendation = {
-        action: stockData.isUp ? 'BUY' : 'HOLD',
-        confidence: Math.floor(Math.random() * 15) + 75, // 75-90%
-        summary: stockData.isUp
-            ? "Strong bullish signals detected. Technical indicators show oversold conditions with high institutional accumulation. Entry point optimal within next 48 hours."
-            : "Mixed signals present. Consider waiting for clearer trend confirmation before increasing position size.",
-        priceTarget: formatPrice(stockData.target, ticker),
-        currentPrice: formatPrice(stockData.price, ticker),
-        upside: `+${stockData.upside.toFixed(1)}%`,
-        timeframe: '3-6 months',
-        // 🔥 Show strategy from wizard
-        strategy: wizardData?.priceStrategy || null,
-        targetEntry: wizardData?.target_price || null,
-        investmentGoal: wizardData?.strategy || null
-=======
 const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }) => {
     const [activeCardIndex, setActiveCardIndex] = useState(0);
     const [cardProgress, setCardProgress] = useState(0);
 
-    // Derive data from API response
+    // 🔧 Cache fallback data with useMemo to prevent re-generation on every render
+    const fallbackData = useMemo(() => getStockData(ticker), [ticker]);
+
+    // 🔧 Generate stable confidence based on ticker (not random)
+    const stableConfidence = useMemo(() => {
+        if (!ticker) return 80;
+        const hash = ticker.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return 75 + (hash % 15); // 75-89%
+    }, [ticker]);
+
+    // Derive data from API response or use fallback
     const priceData = analysisData?.market_data?.price || {};
-    const currentPrice = priceData.current || null;
-    const previousClose = priceData.previous_close || null;
+    const currentPrice = priceData.current || fallbackData.price;
+    const previousClose = priceData.previous_close || (fallbackData.price - fallbackData.change);
     const priceChange = currentPrice && previousClose
         ? ((currentPrice - previousClose) / previousClose * 100).toFixed(2)
-        : null;
+        : fallbackData.changePercent.toFixed(2);
 
     // AI Analysis from backend
     const aiAnalysis = analysisData?.analysis || {};
@@ -254,31 +261,45 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
     // Format price display
     const formatPrice = (price) => {
         if (!price) return '—';
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        }).format(price);
+        return formatPriceWithCurrency(price, ticker);
     };
 
-    // AI Recommendation - from API or loading state
+    // Get market data with fallback
+    const marketCap = analysisData?.market_data?.market_cap
+        ? (getCurrencySymbol(ticker) === '₹'
+            ? `₹${(analysisData.market_data.market_cap / 10000000).toFixed(1)}L Cr`
+            : `$${(analysisData.market_data.market_cap / 1000000000).toFixed(0)}B`)
+        : fallbackData.marketCap;
+
+    const volume = analysisData?.market_data?.volume
+        ? (getCurrencySymbol(ticker) === '₹'
+            ? `${(analysisData.market_data.volume / 10000000).toFixed(1)} Cr`
+            : `${(analysisData.market_data.volume / 1000000).toFixed(0)}M`)
+        : fallbackData.volume;
+
+    // AI Recommendation - from API or fallback (using stable values)
     const aiRecommendation = {
-        action: aiAnalysis.recommendation || (isLoading ? 'ANALYZING...' : 'N/A'),
-        confidence: aiAnalysis.confidence || (isLoading ? 0 : 0),
-        summary: aiAnalysis.summary || (isLoading ? "Analyzing market data, news, and social sentiment..." : (error ? `Error: ${error}` : "Complete the analysis to see AI insights")),
-        priceTarget: aiAnalysis.price_target ? formatPrice(aiAnalysis.price_target) : '—',
+        action: aiAnalysis.recommendation || (isLoading ? 'ANALYZING...' : (fallbackData.isUp ? 'BUY' : 'HOLD')),
+        confidence: aiAnalysis.confidence || (isLoading ? 0 : stableConfidence),
+        summary: aiAnalysis.summary || (isLoading ? "Analyzing market data, news, and social sentiment..." : (error ? `Error: ${error}` : fallbackData.aiExplanation)),
+        priceTarget: aiAnalysis.price_target ? formatPrice(aiAnalysis.price_target) : formatPrice(fallbackData.target),
         currentPrice: formatPrice(currentPrice),
-        upside: aiAnalysis.upside || '—',
-        timeframe: aiAnalysis.timeframe || '—'
->>>>>>> 7914fa05655e2eb5505207afd48bb2e403fef630
+        upside: aiAnalysis.upside || `+${fallbackData.upside.toFixed(1)}%`,
+        timeframe: aiAnalysis.timeframe || '3-6 months'
     };
+
+    // Get AI explanation with fallback
+    const aiExplanation = aiAnalysis.explanation || aiAnalysis.summary || fallbackData.aiExplanation;
+
+    // Determine if stock is up
+    const isUp = priceChange !== null ? parseFloat(priceChange) >= 0 : fallbackData.isUp;
 
     // Shuffling cards data
     const insightCards = [
         {
             type: 'opportunity',
             icon: TrendingUp,
-            title: `Undervalued by ${Math.floor(stockData.upside)}%`,
+            title: `Undervalued by ${Math.floor(fallbackData.upside)}%`,
             description: 'Current price is significantly below intrinsic value based on DCF analysis and peer comparison.'
         },
         {
@@ -321,40 +342,9 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
         return () => clearInterval(interval);
     }, [insightCards.length]);
 
-<<<<<<< HEAD
-    const colorClass = stockData.isUp ? 'text-[#5ac53b]' : 'text-[#ff5252]';
-    const strokeColor = stockData.isUp ? '#5ac53b' : '#ff5252';
-    const ArrowIcon = stockData.isUp ? ArrowUpRight : ArrowDownRight;
-
-    // 🔥 Get strategy display text
-    const getStrategyText = () => {
-        if (!wizardData?.priceStrategy) return null;
-
-        switch (wizardData.priceStrategy) {
-            case 'discount':
-                return { label: 'Strategy', value: 'Waiting for 5-15% dip', color: 'text-blue-400' };
-            case 'ai_optimal':
-                return { label: 'Strategy', value: 'AI finding optimal entry', color: 'text-purple-400' };
-            case 'specific':
-                return {
-                    label: 'Target Entry',
-                    value: `${currencySymbol}${wizardData.target_price || 'Set'}`,
-                    color: 'text-green-400'
-                };
-            case 'blank':
-                return { label: 'Strategy', value: 'Monitoring for signals', color: 'text-gray-400' };
-            default:
-                return null;
-        }
-    };
-
-    const strategyDisplay = getStrategyText();
-=======
-    const isUp = priceChange !== null ? parseFloat(priceChange) >= 0 : true;
     const colorClass = isUp ? 'text-[#5ac53b]' : 'text-[#ff5252]';
     const strokeColor = isUp ? '#5ac53b' : '#ff5252';
     const ArrowIcon = isUp ? ArrowUpRight : ArrowDownRight;
->>>>>>> 7914fa05655e2eb5505207afd48bb2e403fef630
 
     return (
         <div className="min-h-screen bg-[#050505] text-white relative z-20 overflow-y-auto pb-32 pt-20 fade-in">
@@ -396,15 +386,6 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                                 {isLoading ? 'LOADING' : 'LIVE'}
                             </span>
                         </div>
-<<<<<<< HEAD
-                        <h1 className="text-4xl font-bold">{ticker || "RELIANCE.NS"}</h1>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-3xl font-mono font-bold">{formatPrice(stockData.price, ticker)}</div>
-                        <div className={`flex items-center gap-1 justify-end text-sm font-bold ${colorClass}`}>
-                            <ArrowIcon size={16} />
-                            <span>{stockData.isUp ? '+' : ''}{stockData.changePercent.toFixed(2)}% today</span>
-=======
                         <h1 className="text-4xl font-bold">{ticker || "STOCK"}</h1>
                     </div>
                     <div className="text-right">
@@ -414,43 +395,24 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                         <div className={`flex items-center gap-1 justify-end text-sm font-bold ${colorClass}`}>
                             <ArrowIcon size={16} />
                             <span>{priceChange !== null ? `${isUp ? '+' : ''}${priceChange}% today` : '—'}</span>
->>>>>>> 7914fa05655e2eb5505207afd48bb2e403fef630
                         </div>
                     </div>
                 </div>
 
-                {/* 🔥 STRATEGY BANNER (if user selected one) */}
-                {strategyDisplay && (
-                    <div className="mb-6 p-4 rounded-xl bg-linear-to-r from-blue-500/10 via-purple-500/10 to-transparent border border-white/10">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <Target size={18} className={strategyDisplay.color} />
-                                <span className="text-gray-400 text-sm">{strategyDisplay.label}:</span>
-                                <span className={`font-bold ${strategyDisplay.color}`}>{strategyDisplay.value}</span>
-                            </div>
-                            {wizardData?.strategy && (
-                                <span className="text-xs text-gray-500 px-3 py-1 rounded-full bg-white/5">
-                                    {wizardData.strategy}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                )}
-
                 {/* 🔥 PREMIUM AI INSIGHT CARD */}
                 <div className="relative mb-8 group">
                     {/* Animated glow effect */}
-                    <div className="absolute -inset-2 bg-linear-to-r from-purple-600 via-blue-500 to-green-400 rounded-3xl opacity-30 blur-xl group-hover:opacity-50 transition-opacity ai-card-glow" />
+                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-blue-500 to-green-400 rounded-3xl opacity-30 blur-xl group-hover:opacity-50 transition-opacity ai-card-glow" />
 
                     {/* Main Card */}
-                    <div className="relative bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] rounded-2xl p-8 border border-white/10 overflow-hidden sparkle">
+                    <div className="relative bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] rounded-2xl p-8 border border-white/10 overflow-hidden sparkle">
                         {/* Shimmer overlay */}
                         <div className="absolute inset-0 shimmer opacity-50 pointer-events-none" />
 
                         {/* Header Row */}
                         <div className="flex items-center justify-between mb-6 relative">
                             <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-xl bg-linear-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/20">
+                                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/20">
                                     <Sparkles size={24} className="text-white" />
                                 </div>
                                 <div>
@@ -515,7 +477,7 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                         GEMINI'S TAKE
                     </h3>
                     <div className="relative group">
-                        <div className="absolute -inset-1 bg-linear-to-r from-purple-600/20 to-blue-600/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="relative rh-card p-6 border-l-4 border-purple-500/50">
                             <div className="flex items-start gap-4">
                                 <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400 shrink-0">
@@ -524,7 +486,7 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                                 <div>
                                     <div className="text-sm text-gray-500 mb-2">AI Analyst Verdict</div>
                                     <p className="text-gray-300 leading-relaxed text-sm">
-                                        {stockData.aiExplanation}
+                                        {aiExplanation}
                                     </p>
                                     <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
                                         <Brain size={12} className="text-purple-400" />
@@ -568,7 +530,7 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                             </div>
                             <span className="text-xs text-gray-500 uppercase tracking-widest">Market Cap</span>
                         </div>
-                        <div className="text-2xl font-bold">{stockData.marketCap}</div>
+                        <div className="text-2xl font-bold">{marketCap}</div>
                     </div>
                     <div className="rh-card p-5 group hover:border-blue-500/30 transition-colors">
                         <div className="flex items-center gap-2 mb-3">
@@ -577,7 +539,7 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                             </div>
                             <span className="text-xs text-gray-500 uppercase tracking-widest">Volume</span>
                         </div>
-                        <div className="text-2xl font-bold">{stockData.volume}</div>
+                        <div className="text-2xl font-bold">{volume}</div>
                     </div>
                 </div>
 
@@ -585,7 +547,7 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                 <div className="mb-8">
                     <h3 className="text-gray-500 font-bold text-xs uppercase tracking-widest mb-4">Market Sentiment</h3>
                     <div className="rh-card overflow-hidden">
-                        <SentimentMeter score={stockData.isUp ? 85 : 45} />
+                        <SentimentMeter score={isUp ? 85 : 45} />
                     </div>
                 </div>
 
@@ -647,22 +609,22 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                 <div className="rh-card p-6 mb-8 border-l-4 border-green-500/50">
                     <div className="flex justify-between items-center mb-4">
                         <span className="text-gray-400 font-bold">Your Position</span>
-                        <span className="text-white font-mono font-bold text-xl">{formatPrice(stockData.price * 10, ticker)}</span>
+                        <span className="text-white font-mono font-bold text-xl">{formatPrice(currentPrice * 10)}</span>
                     </div>
                     <div className="rh-divider my-4" />
                     <div className="flex justify-between items-center">
                         <span className="text-gray-400 font-bold">Avg Cost</span>
-                        <span className="text-white font-mono font-bold">{formatPrice(stockData.price * 0.92, ticker)}</span>
+                        <span className="text-white font-mono font-bold">{formatPrice(currentPrice * 0.92)}</span>
                     </div>
                     <div className="flex justify-between items-center mt-2">
                         <span className="text-gray-400 font-bold">P&L</span>
-                        <span className="text-green-400 font-mono font-bold">+{formatPrice(stockData.price * 0.8, ticker)} (+8.7%)</span>
+                        <span className="text-green-400 font-mono font-bold">+{formatPrice(currentPrice * 0.8)} (+8.7%)</span>
                     </div>
                 </div>
             </div>
 
             {/* 🔥 STICKY ACTION BUTTONS */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-linear-to-t from-[#050505] via-[#050505] to-transparent z-50">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent z-50">
                 <div className="max-w-2xl mx-auto flex gap-3">
                     <button className="flex-1 btn-sell py-4 rounded-2xl font-bold text-lg text-white">
                         SELL

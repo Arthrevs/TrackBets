@@ -4,7 +4,8 @@
  * Connects to FastAPI backend for stock analysis
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL =
+    import.meta.env.VITE_API_URL || '';
 
 /**
  * Analyze a stock ticker via the backend API
@@ -13,7 +14,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
  */
 export async function analyzeStock(ticker) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/analyze/${ticker}`, {
+        const response = await fetch(`${API_BASE_URL}/api/analyze?ticker=${encodeURIComponent(ticker)}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -63,7 +64,10 @@ export async function checkApiHealth() {
         const response = await fetch(`${API_BASE_URL}/api/health`);
         return await response.json();
     } catch (error) {
-        return { status: 'offline', error: error.message };
+        return {
+            status: 'offline',
+            error: error.message
+        };
     }
 }
 
@@ -75,7 +79,9 @@ export async function getMockTickers() {
         const response = await fetch(`${API_BASE_URL}/api/mock-tickers`);
         return await response.json();
     } catch (error) {
-        return { mock_tickers: ['ZOMATO.NS', 'TSLA', 'RELIANCE.NS'] };
+        return {
+            mock_tickers: ['ZOMATO.NS', 'TSLA', 'RELIANCE.NS']
+        };
     }
 }
 

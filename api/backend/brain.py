@@ -1,27 +1,27 @@
 """
-<<<<<<< HEAD
 TrackBets Backend - AI Brain Module
 =====================================
-Gemini-powered financial analysis with strict JSON output.
-=======
-Brain module with Rule-Based Fallback & Retry Logic
-Using OpenAI API
->>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
+OpenAI-powered financial analysis with strict JSON output.
 """
 
 import os
 import json
+import time
 from typing import Dict, Optional
 from dotenv import load_dotenv
-<<<<<<< HEAD
-=======
 from openai import OpenAI
->>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
 
 load_dotenv()
 
-<<<<<<< HEAD
-=======
+
+# ============================================================================
+# RULE-BASED FALLBACK
+# ============================================================================
+def rule_based_verdict(market_data: dict) -> tuple:
+    """Fallback verdict using simple rules when AI is unavailable."""
+    sentiment = market_data.get('sentiment', {}).get('overall_score', 0)
+    pe = market_data.get('price', {}).get('pe', 50)
+    
     if sentiment > 0.4 and pe < 50:
         return "BUY", ["Strong positive sentiment", "Attractive valuation"]
     elif sentiment < -0.2 or pe > 100:
@@ -29,9 +29,10 @@ load_dotenv()
     else:
         return "WAIT", ["Mixed indicators", "Fairly valued"]
 
+
 def generate_flashcard(ticker: str, user_context: dict, market_data: dict, deep_analysis: dict) -> dict:
+    """Generate a flashcard with AI analysis or fallback."""
     
-    load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY")
     
     # Use Fallback if no key
@@ -100,60 +101,26 @@ def generate_flashcard(ticker: str, user_context: dict, market_data: dict, deep_
         },
         "ai_explanation": "AI service unavailable. Falling back to logical analysis."
     }
->>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
+
 
 # ============================================================================
 # FINANCIAL ANALYST CLASS
 # ============================================================================
 class FinancialAnalyst:
     """
-    AI-powered financial analyst using Google Gemini 2.5 Flash.
+    AI-powered financial analyst using OpenAI GPT-4o-mini.
     Analyzes stock data and returns structured investment verdicts.
     """
     
     def __init__(self):
-<<<<<<< HEAD
-        self.api_key = os.getenv("GOOGLE_API_KEY")
-        self.model = None
-        self._initialize_model()
-    
-    def _initialize_model(self):
-        """Initialize the Gemini model."""
-        try:
-            import google.generativeai as genai
-            
-            if not self.api_key:
-                print("[BRAIN] Warning: GOOGLE_API_KEY not found in environment")
-                return
-            
-            genai.configure(api_key=self.api_key)
-            
-            # Use Gemini 2.5 Flash for speed
-            self.model = genai.GenerativeModel(
-                model_name="gemini-2.5-flash-preview-05-20",
-                generation_config={
-                    "temperature": 0.7,
-                    "top_p": 0.95,
-                    "max_output_tokens": 1024,
-                }
-            )
-            print("[BRAIN] Gemini model initialized successfully")
-            
-        except Exception as e:
-            print(f"[BRAIN] Failed to initialize Gemini: {str(e)}")
-            self.model = None
-    
-    def analyze(self, context: str, analysis_type: str = "Investment Decision") -> Dict:
-=======
-        load_dotenv()
-        api_key = os.getenv("OPENAI_API_KEY")
-        if api_key:
-            self.client = OpenAI(api_key=api_key)
+        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.client = None
+        if self.api_key:
+            self.client = OpenAI(api_key=self.api_key)
         else:
-            self.client = None
+            print("[BRAIN] Warning: OPENAI_API_KEY not found in environment")
 
-    def analyze(self, context_str: str, query: str) -> dict:
->>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
+    def analyze(self, context: str, analysis_type: str = "Investment Decision") -> Dict:
         """
         Analyze financial data and return structured verdict.
         
@@ -164,9 +131,8 @@ class FinancialAnalyst:
         Returns:
             Dict with verdict, confidence, reasons, and explanation
         """
-<<<<<<< HEAD
-        if not self.model:
-            return self._fallback_response("AI model not available")
+        if not self.client:
+            return self._fallback_response("AI model not available - OPENAI_API_KEY missing")
         
         try:
             # System prompt enforcing strict JSON output
@@ -201,20 +167,26 @@ Guidelines:
 
 Remember: Respond with ONLY the JSON object, no other text."""
 
-            # Generate response
-            response = self.model.generate_content(
-                f"{system_prompt}\n\n{user_prompt}"
+            # Generate response using OpenAI
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=1024
             )
             
             # Parse JSON from response
-            return self._parse_response(response.text)
+            return self._parse_response(response.choices[0].message.content)
             
         except Exception as e:
             print(f"[BRAIN] Analysis error: {str(e)}")
             return self._fallback_response(str(e))
     
     def _parse_response(self, response_text: str) -> Dict:
-        """Parse Gemini response and extract JSON."""
+        """Parse OpenAI response and extract JSON."""
         try:
             # Clean the response (remove markdown if present)
             text = response_text.strip()
@@ -324,43 +296,4 @@ Additional Data:
 # ============================================================================
 # EXPORTS
 # ============================================================================
-__all__ = ['FinancialAnalyst', 'quick_analyze']
-=======
-        if not self.client:
-            # Return dummy structure matching expectation
-            return {
-                "verdict": "WAIT",
-                "reasons": ["API Key Missing", "Using Mock Fallback"]
-            }
-
-        prompt = f"""
-        Act as a hedge fund analyst.
-        CONTEXT: {context_str}
-        USER QUERY: {query}
-        
-        TASK: Return VALID JSON.
-        {{
-          "verdict": "BUY|SELL|WAIT",
-          "reasons": ["Reason 1", "Reason 2"]
-        }}
-        """
-        
-        try:
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "You are a hedge fund analyst. Always respond with valid JSON only."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=500
-            )
-            clean_text = response.choices[0].message.content.replace("```json", "").replace("```", "").strip()
-            return json.loads(clean_text)
-        except:
-            return {
-                "verdict": "WAIT",
-                "reasons": ["AI Analysis Failed", "Try again later"]
-            }
-
->>>>>>> 67c34ba (Convert from Gemini to OpenAI API)
+__all__ = ['FinancialAnalyst', 'quick_analyze', 'generate_flashcard', 'rule_based_verdict']
