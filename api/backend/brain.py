@@ -120,6 +120,56 @@ class FinancialAnalyst:
         else:
             print("[BRAIN] Warning: OPENAI_API_KEY not found in environment")
 
+    def get_ticker_identity(self, ticker: str) -> Dict:
+        """
+        Get a Gen Z style identity/overview for the stock.
+        """
+        if not self.client:
+            return {
+                "overview": "API Key missing, can't roast this stock.",
+                "currency_symbol": "$",
+                "currency_code": "USD"
+            }
+            
+        system_prompt = """You are a financial backend API. You MUST return data in valid, parseable JSON format only. Do not add markdown formatting like ```json or ```. Do not include any conversational text outside the JSON object.
+Analyze the stock ticker: '{ticker}'."""
+
+        user_prompt = f"""Return a JSON object with exactly these 3 keys:
+1. "overview": A 2-sentence summary of the company's current market sentiment. Be slightly witty or "gen z" style if the stock is volatile.
+2. "currency_symbol": The correct currency symbol (e.g. ₹, $, €, £, ¥).
+3. "currency_code": The 3-letter ISO code (e.g. INR, USD, JPY).
+
+Example Output:
+{{
+    "overview": "Zomato is rallying hard on profitability news, but high valuation makes conservative investors sweat.",
+    "currency_symbol": "₹",
+    "currency_code": "INR"
+}}
+
+Target Ticker: {ticker}"""
+
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt.format(ticker=ticker)},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=200
+            )
+            
+            # Use the existing parse method as it handles markdown cleaning
+            return self._parse_response(response.choices[0].message.content)
+            
+        except Exception as e:
+            print(f"[BRAIN] Identity error: {str(e)}")
+            return {
+                "overview": f"AI died trying to analyze {ticker}.",
+                "currency_symbol": "?",
+                "currency_code": "UNK"
+            }
+    
     def analyze(self, context: str, analysis_type: str = "Investment Decision") -> Dict:
         """
         Analyze financial data and return structured verdict.

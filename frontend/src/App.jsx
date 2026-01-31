@@ -91,8 +91,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen text-white font-sans selection:bg-lando-neon selection:text-black bg-[#050505] overflow-hidden">
-      <Background enableReactive={view === 'landing'} />
+    <div className="min-h-screen text-white font-sans selection:bg-lando-neon selection:text-black bg-lando-bg overflow-hidden">
+      <Background enableReactive={true} />
       <Header onHome={goHome} showBack={view !== 'landing'} onBack={goBack} />
 
       {view === 'landing' && (

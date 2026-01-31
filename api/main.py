@@ -313,6 +313,33 @@ Additional Data:
         )
 
 
+
+@app.post("/api/identity")
+async def get_ticker_identity(request: AnalyzeRequest):
+    """
+    Get a quick identity/overview for a ticker (Gen Z style).
+    """
+    ticker = request.ticker.upper().strip()
+    
+    # Mock data check
+    if ticker in MOCK_DB:
+        mock_data = MOCK_DB[ticker]
+        if "redirect" in mock_data:
+            mock_data = MOCK_DB[mock_data["redirect"]]
+            
+        return {
+            "overview": mock_data['analysis']['ai_explanation'][:150] + "...",
+            "currency_symbol": mock_data['price_data']['currency'],
+            "currency_code": "INR" if mock_data['price_data']['currency'] == "₹" else "USD"
+        }
+
+    try:
+        analyst = FinancialAnalyst()
+        return analyst.get_ticker_identity(ticker)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/api/analyze/{ticker}")
 async def analyze_stock_get(ticker: str):
     """GET endpoint for easy browser testing."""

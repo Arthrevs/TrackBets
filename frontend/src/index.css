@@ -11,6 +11,9 @@
     --font-sans: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     --font-condensed: 'Roboto Condensed', sans-serif;
+
+    --shadow-neon: 0 0 15px #CCFF00;
+    --shadow-neon-faint: 0 0 20px rgba(204, 255, 0, 0.1);
 }
 
 /* Robinhood-Style Clean Design - NO BLUR EFFECTS */

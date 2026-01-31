@@ -20,7 +20,7 @@ const AILoadingScreen = ({ ticker, onComplete }) => {
         },
         {
             icon: Brain,
-            text: 'Gemini 2.5 Flash calculating verdict...',
+            text: 'GPT-4o calculating verdict...',
             color: 'text-purple-400',
             bgColor: 'from-purple-500/20 to-purple-600/10'
         }
@@ -99,8 +99,8 @@ const AILoadingScreen = ({ ticker, onComplete }) => {
                             <div
                                 key={i}
                                 className={`w-3 h-3 rounded-full transition-all duration-300 ${i <= stage
-                                        ? 'bg-white scale-100'
-                                        : 'bg-gray-700 scale-75'
+                                    ? 'bg-white scale-100'
+                                    : 'bg-gray-700 scale-75'
                                     }`}
                             />
                         ))}
@@ -125,7 +125,7 @@ const AILoadingScreen = ({ ticker, onComplete }) => {
             {/* Powered by badge */}
             <div className="mt-8 flex items-center gap-2 text-gray-500 text-sm">
                 <Brain size={16} className="text-purple-400" />
-                <span>Powered by <span className="text-purple-400 font-semibold">Gemini 2.5 Flash</span></span>
+                <span>Powered by <span className="text-purple-400 font-semibold">GPT-4o</span></span>
             </div>
         </div>
     );

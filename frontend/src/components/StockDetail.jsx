@@ -171,31 +171,31 @@ const getStockData = (ticker) => {
 const InsightCard = ({ card, isActive, progress }) => {
     const colorStyles = {
         risk: {
-            bg: 'bg-gradient-to-br from-red-500/20 via-red-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-red-500/20 via-red-600/10 to-transparent',
             border: 'border-red-500/30',
             icon: 'text-red-400',
             glow: 'shadow-[inset_0_0_30px_rgba(239,68,68,0.1)]'
         },
         opportunity: {
-            bg: 'bg-gradient-to-br from-green-500/20 via-green-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-green-500/20 via-green-600/10 to-transparent',
             border: 'border-green-500/30',
             icon: 'text-green-400',
             glow: 'shadow-[inset_0_0_30px_rgba(34,197,94,0.1)]'
         },
         warning: {
-            bg: 'bg-gradient-to-br from-orange-500/20 via-orange-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-orange-500/20 via-orange-600/10 to-transparent',
             border: 'border-orange-500/30',
             icon: 'text-orange-400',
             glow: 'shadow-[inset_0_0_30px_rgba(249,115,22,0.1)]'
         },
         sentiment: {
-            bg: 'bg-gradient-to-br from-purple-500/20 via-purple-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-purple-500/20 via-purple-600/10 to-transparent',
             border: 'border-purple-500/30',
             icon: 'text-purple-400',
             glow: 'shadow-[inset_0_0_30px_rgba(168,85,247,0.1)]'
         },
         info: {
-            bg: 'bg-gradient-to-br from-blue-500/20 via-blue-600/10 to-transparent',
+            bg: 'bg-linear-to-br from-blue-500/20 via-blue-600/10 to-transparent',
             border: 'border-blue-500/30',
             icon: 'text-blue-400',
             glow: 'shadow-[inset_0_0_30px_rgba(59,130,246,0.1)]'
@@ -347,7 +347,7 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
     const ArrowIcon = isUp ? ArrowUpRight : ArrowDownRight;
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white relative z-20 overflow-y-auto pb-32 pt-20 fade-in">
+        <div className="min-h-screen text-white relative z-20 overflow-y-auto pb-32 pt-20 fade-in">
             <div className="px-6 max-w-2xl mx-auto">
 
                 {/* Loading Overlay */}
@@ -402,22 +402,22 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                 {/* 🔥 PREMIUM AI INSIGHT CARD */}
                 <div className="relative mb-8 group">
                     {/* Animated glow effect */}
-                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-blue-500 to-green-400 rounded-3xl opacity-30 blur-xl group-hover:opacity-50 transition-opacity ai-card-glow" />
+                    <div className="absolute -inset-2 bg-linear-to-r from-purple-600 via-blue-500 to-green-400 rounded-3xl opacity-30 blur-xl group-hover:opacity-50 transition-opacity ai-card-glow" />
 
                     {/* Main Card */}
-                    <div className="relative bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] rounded-2xl p-8 border border-white/10 overflow-hidden sparkle">
+                    <div className="relative bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] rounded-2xl p-8 border border-white/10 overflow-hidden sparkle">
                         {/* Shimmer overlay */}
                         <div className="absolute inset-0 shimmer opacity-50 pointer-events-none" />
 
                         {/* Header Row */}
                         <div className="flex items-center justify-between mb-6 relative">
                             <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/20">
+                                <div className="p-3 rounded-xl bg-linear-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/20">
                                     <Sparkles size={24} className="text-white" />
                                 </div>
                                 <div>
                                     <div className="text-xs text-gray-400 uppercase tracking-widest font-bold">AI RECOMMENDATION</div>
-                                    <div className="text-sm text-gray-500">Powered by Gemini 2.5 Flash</div>
+                                    <div className="text-sm text-gray-500">Powered by GPT-4o</div>
                                 </div>
                             </div>
                             <div className="text-right">
@@ -474,10 +474,10 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                 <div className="mb-8">
                     <h3 className="text-gray-500 font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                         <Brain size={14} className="text-purple-400" />
-                        GEMINI'S TAKE
+                        OPENAI'S TAKE
                     </h3>
                     <div className="relative group">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute -inset-1 bg-linear-to-r from-purple-600/20 to-blue-600/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="relative rh-card p-6 border-l-4 border-purple-500/50">
                             <div className="flex items-start gap-4">
                                 <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400 shrink-0">
@@ -490,7 +490,7 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                                     </p>
                                     <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
                                         <Brain size={12} className="text-purple-400" />
-                                        <span>Generated by Gemini 2.5 Flash • Updated just now</span>
+                                        <span>Generated by GPT-4o • Updated just now</span>
                                     </div>
                                 </div>
                             </div>
@@ -624,7 +624,7 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
             </div>
 
             {/* 🔥 STICKY ACTION BUTTONS */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent z-50">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-linear-to-t from-lando-bg via-lando-bg to-transparent z-50">
                 <div className="max-w-2xl mx-auto flex gap-3">
                     <button className="flex-1 btn-sell py-4 rounded-2xl font-bold text-lg text-white">
                         SELL

@@ -46,7 +46,7 @@ const LandingPage = ({ onNavigate }) => {
     const features = [
         { icon: Cpu, value: '100%', label: 'AI Driven', color: 'text-yellow-400' },
         { icon: Globe, value: 'NSE & BSE', label: 'Supported', color: 'text-blue-400' },
-        { icon: Brain, value: 'GEMINI', label: '1.5 Pro Powered', color: 'text-purple-400' }
+        { icon: Brain, value: 'OPENAI', label: 'GPT-4o Powered', color: 'text-purple-400' }
     ];
 
     // How It Works Steps
