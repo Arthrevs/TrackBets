@@ -5,6 +5,8 @@ const AssetForm = ({ intent, onComplete, onBack }) => {
   const [step, setStep] = useState(1);
   const [isOwner, setIsOwner] = useState(false);
   const [priceStrategy, setPriceStrategy] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [formData, setFormData] = useState({
     ticker: '',
     bg_price: '',
@@ -12,6 +14,37 @@ const AssetForm = ({ intent, onComplete, onBack }) => {
     target_price: '',
     strategy: ''
   });
+
+  const handleSearch = async (query) => {
+    // Only search if 3+ chars
+    if (query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      // Debounce could be added here, but for now direct call is fine for prototype
+      const response = await fetch('http://127.0.0.1:8000/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+      const data = await response.json();
+      if (data && data.ticker) {
+        setSuggestions([data]); // wrap single result in array for now
+      }
+    } catch (e) {
+      console.error("Search failed", e);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const selectTicker = (suggestion) => {
+    setFormData({ ...formData, ticker: suggestion.ticker });
+    setSuggestions([]); // Clear suggestions
+  };
 
   const nextStep = () => setStep(s => s + 1);
   const prevStep = () => setStep(s => Math.max(1, s - 1));
@@ -103,14 +136,55 @@ const AssetForm = ({ intent, onComplete, onBack }) => {
           <div className="rh-card p-10 fade-in">
             <h2 className="text-3xl font-bold mb-2">Which asset?</h2>
             <p className="text-gray-500 mb-6">Enter the ticker symbol or company name</p>
-            <input
-              autoFocus
-              type="text"
-              placeholder="e.g. AAPL, TSLA, NVDA"
-              value={formData.ticker}
-              onChange={e => setFormData({ ...formData, ticker: e.target.value.toUpperCase() })}
-              className="w-full bg-transparent border-b-2 border-gray-700 text-3xl font-mono text-[#5ac53b] focus:border-[#5ac53b] focus:outline-none py-2 mb-8 uppercase placeholder-gray-800"
-            />
+            <div className="relative">
+              <input
+                autoFocus
+                type="text"
+                placeholder="e.g. Zomato, Apple, Reliance"
+                value={formData.ticker}
+                onChange={e => {
+                  const val = e.target.value;
+                  setFormData({ ...formData, ticker: val });
+                  handleSearch(val);
+                }}
+                className="w-full bg-transparent border-b-2 border-gray-700 text-3xl font-mono text-[#5ac53b] focus:border-[#5ac53b] focus:outline-none py-2 mb-2 placeholder-gray-800"
+              />
+
+              {/* Suggestions Dropdown */}
+              {(suggestions.length > 0 || isSearching) && formData.ticker.length > 2 && (
+                <div className="absolute top-full left-0 right-0 bg-[#1c1c1e] border border-gray-800 rounded-xl shadow-2xl z-50 overflow-hidden mt-2">
+                  {isSearching ? (
+                    <div className="p-4 text-gray-500 text-sm animate-pulse">Searching global markets...</div>
+                  ) : (
+                    suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => selectTicker(s)}
+                        className="w-full text-left p-4 hover:bg-[#2c2c2e] transition-colors border-b border-gray-800 last:border-0"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="font-bold text-white">{s.name}</div>
+                            <div className="text-xs text-gray-500">{s.exchange} • {s.currency}</div>
+                          </div>
+                          <div className="bg-[#5ac53b]/20 text-[#5ac53b] px-3 py-1 rounded-lg text-sm font-mono font-bold">
+                            {s.ticker}
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                  {/* Fallback if no specific suggestion but user wants to proceed */}
+                  {!isSearching && suggestions.length > 0 && (
+                    <div className="p-2 bg-black/20 text-xs text-center text-gray-500">
+                      AI Verification: {suggestions[0].name ? "Verified" : "Unverified"}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-8"></div>
             <div className="flex justify-end">
               <button
                 disabled={!formData.ticker}

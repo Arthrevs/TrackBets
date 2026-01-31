@@ -153,6 +153,40 @@ Target Ticker: {ticker}"""
                 "currency_symbol": "?",
                 "currency_code": "UNK"
             }
+
+    def search_ticker(self, query: str) -> Dict:
+        """
+        Identify the correct stock ticker from a user search query.
+        """
+        if not self.model:
+            return {"error": "AI not configured"}
+            
+        system_prompt = """You are a financial search engine. 
+        User will search for a company (e.g. "zomato", "apple", "reliance").
+        You must return the MOST ACCURATE ticker symbol.
+        
+        RULES:
+        1. Default to NSE (.NS) for Indian companies.
+        2. Default to US exchanges for US companies.
+        3. Return valid JSON only.
+        """
+        
+        user_prompt = f"""Search Query: "{query}"
+        
+        Return JSON:
+        {{
+            "ticker": "SYMBOL.NS" or "SYMBOL",
+            "name": "Official Company Name",
+            "currency": "INR" or "USD" or "EUR" etc,
+            "exchange": "NSE" or "NASDAQ" or "NYSE" etc
+        }}"""
+        
+        try:
+            response = self.model.generate_content(f"{system_prompt}\n\n{user_prompt}")
+            return self._parse_response(response.text)
+        except Exception as e:
+            print(f"[BRAIN] Search error: {e}")
+            return {"error": "Search failed"}
     
     def analyze(self, context: str, analysis_type: str = "Investment Decision") -> Dict:
         """

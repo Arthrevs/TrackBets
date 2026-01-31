@@ -238,8 +238,46 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
     const [cardProgress, setCardProgress] = useState(0);
     const [selectedTimeframe, setSelectedTimeframe] = useState('1D');
 
-    // 📊 Chart paths for different timeframes (deterministic based on ticker)
+    // 📊 Chart paths - Real data or Deterministic Fallback
     const chartPaths = useMemo(() => {
+        // 1. Try to use real data from API
+        if (analysisData?.graph_data?.points?.length > 0) {
+            const points = analysisData.graph_data.points;
+            const values = points.map(p => p.value);
+            const minVal = Math.min(...values);
+            const maxVal = Math.max(...values);
+            const range = maxVal - minVal || 1;
+
+            // Normalize to 400x150 SVG
+            // Invert Y because SVG 0 is top
+            const normalize = (val, i) => {
+                const x = (i / (points.length - 1)) * 400;
+                const y = 150 - ((val - minVal) / range) * 120 - 15; // padding
+                return { x, y };
+            };
+
+            const svgPoints = values.map((v, i) => normalize(v, i));
+
+            let pathD = `M${svgPoints[0].x},${svgPoints[0].y}`;
+            for (let i = 1; i < svgPoints.length; i++) {
+                // Simple line join for now, could use bezier for smoothing
+                pathD += ` L${svgPoints[i].x},${svgPoints[i].y}`;
+            }
+
+            // For fill, close the path at bottom
+            const fillD = pathD + ` L400,150 L0,150 Z`;
+
+            // Return same path for all timeframes for now (since we only fetch 1Y)
+            // Ideally we slice this array for 1W, 1M etc.
+            const realPath = { line: pathD, fill: fillD, endY: svgPoints[svgPoints.length - 1].y };
+
+            return {
+                '1D': realPath, '1W': realPath, '1M': realPath,
+                '3M': realPath, '1Y': realPath, 'ALL': realPath
+            };
+        }
+
+        // 2. Fallback: Deterministic Mock Data
         if (!ticker) return {};
         const hash = ticker.split('').reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
 
@@ -295,7 +333,12 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
     // Format price display
     const formatPrice = (price) => {
         if (!price) return '—';
-        return formatPriceWithCurrency(price, ticker);
+        const symbol = analysisData?.currency || getCurrencySymbol(ticker);
+
+        if (symbol === '₹') {
+            return `₹${Number(price).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+        return `${symbol}${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     };
 
     // Get market data with fallback
@@ -645,8 +688,8 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                                     key={tf}
                                     onClick={() => setSelectedTimeframe(tf)}
                                     className={`px-4 py-2 rounded-lg transition-all ${selectedTimeframe === tf
-                                            ? 'text-[#5ac53b] bg-[#5ac53b]/10 shadow-sm'
-                                            : 'hover:bg-white/5'
+                                        ? 'text-[#5ac53b] bg-[#5ac53b]/10 shadow-sm'
+                                        : 'hover:bg-white/5'
                                         }`}
                                 >
                                     {tf}
