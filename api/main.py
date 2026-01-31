@@ -8,6 +8,7 @@ Run locally: uvicorn main:app --reload --port 8000
 
 import os
 import sys
+import yfinance as yf
 from datetime import datetime
 from typing import Optional
 

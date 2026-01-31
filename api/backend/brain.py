@@ -163,12 +163,15 @@ Target Ticker: {ticker}"""
             
         system_prompt = """You are a financial search engine. 
         User will search for a company (e.g. "zomato", "apple", "reliance").
-        You must return the MOST ACCURATE ticker symbol.
+        You must return the MOST ACCURATE ticker symbol compatible with Yahoo Finance.
         
-        RULES:
-        1. Default to NSE (.NS) for Indian companies.
-        2. Default to US exchanges for US companies.
-        3. Return valid JSON only.
+        CRITICAL RULES:
+        1. For INDIAN companies (Zomato, Tata, Reliance), you MUST append ".NS" (NSE) or ".BO" (BSE).
+           - Example: "zomato" -> "ZOMATO.NS" (NOT just "ZOMATO")
+           - Example: "tata motors" -> "TATAMOTORS.NS"
+        2. For US companies, use the standard ticker (e.g. "AAPL", "TSLA").
+        3. Do NOT hallucinate. If unsure, return the most likely major listing.
+        4. Return valid JSON only.
         """
         
         user_prompt = f"""Search Query: "{query}"
@@ -177,8 +180,8 @@ Target Ticker: {ticker}"""
         {{
             "ticker": "SYMBOL.NS" or "SYMBOL",
             "name": "Official Company Name",
-            "currency": "INR" or "USD" or "EUR" etc,
-            "exchange": "NSE" or "NASDAQ" or "NYSE" etc
+            "currency": "INR" or "USD",
+            "exchange": "NSE" or "NASDAQ" etc
         }}"""
         
         try:
