@@ -1,25 +1,40 @@
-# Build Stage
-FROM node:20-alpine as build
+# Use Python as base image
+FROM python:3.10-slim
+
+# Install system dependencies (curl for Node installation)
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js logic
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+
+# Set Working Directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
-COPY frontend/package*.json ./
-
-# Install dependencies
+# --- Frontend Build ---
+COPY frontend/package*.json ./frontend/
+WORKDIR /app/frontend
+# Install Node dependencies
 RUN npm install
-
-# Copy the rest of the frontend code
+# Copy frontend source
 COPY frontend/ ./
-
-# Build the app
+# Build React App
 RUN npm run build
 
-# Production Stage
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+# --- Backend Setup ---
+WORKDIR /app
+# Copy Backend requirements
+COPY requirements.txt .
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+# Copy Backend Source (api folder)
+COPY api/ ./api/
 
-# Expose port 80
-EXPOSE 80
+# Expose Render Port
+EXPOSE 10000
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start Command
+# Run Uvicorn pointing to the main app
+# Host 0.0.0.0 is crucial for Docker
+# Port 10000 is standard for Render web services
+CMD ["uvicorn", "api.backend.main:app", "--host", "0.0.0.0", "--port", "10000"]
