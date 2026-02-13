@@ -798,17 +798,119 @@ nav {
     border-radius: 12px;
     padding: 16px 20px;
     color: var(--text-primary);
-    font-size: 16px;
+    outline: none;
     font-family: 'JetBrains Mono', monospace;
-    text-transform: uppercase;
+    font-size: 16px;
+    /* Prevents iOS zoom on focus */
     transition: all 0.3s;
 }
 
 .demo-input:focus {
     outline: none;
     border-color: var(--bullish);
+    background: rgba(0, 0, 0, 0.7);
     box-shadow: 0 0 20px rgba(0, 255, 148, 0.2);
 }
+
+/* --- MOBILE OPTIMIZATION --- */
+
+/* 1. Global Touch Adjustments */
+@media (hover: none) {
+
+    /* Disable hover effects on touch devices to prevent sticky states */
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .nav-link-item:hover,
+    .analysis-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Use Active state for feedback */
+    .btn-primary:active,
+    .btn-secondary:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+}
+
+/* 2. Responsive Layouts */
+@media (max-width: 768px) {
+
+    /* Navigation */
+    nav {
+        padding: 15px 20px;
+    }
+
+    .nav-links-c {
+        display: none;
+        /* Hide desktop menu for now (or implement hamburger if needed, but user just asked for optimization) */
+    }
+
+    /* Hero */
+    .hero {
+        padding: 40px 20px;
+    }
+
+    .hero-title {
+        font-size: 42px;
+        /* Reduce from 72px */
+    }
+
+    .section-title {
+        font-size: 32px;
+        /* Reduce from 48px */
+    }
+
+    /* Grids -> Stack */
+    .analysis-grid {
+        grid-template-columns: 1fr;
+        /* Force single column */
+        gap: 20px;
+        padding: 0 10px;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    /* Analysis Card - Optimization */
+    .analysis-card {
+        min-height: auto;
+        /* Allow flexible height */
+        padding: 24px;
+        /* Disable tilt/3D transforms here if JS enabled them, but CSS hover is already handled above */
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+    }
+
+    .card-title {
+        font-size: 22px;
+    }
+
+    /* Buttons */
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        /* Full width for easier tapping */
+        padding: 14px 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Hide complex animations or heavy elements if needed */
+    .liquid-bg {
+        display: none;
+        /* Save GPU */
+    }
+}
+
+/* Cleaned up garbage lines */
 
 /* Projector Beam Effect Styles */
 .hero-badge-container {

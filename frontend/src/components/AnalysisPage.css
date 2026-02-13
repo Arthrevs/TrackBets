@@ -1042,3 +1042,95 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* --- MOBILE OPTIMIZATION EXTRA --- */
+
+@media (max-width: 768px) {
+    .analysis-container {
+        padding: 24px 16px;
+    }
+
+    /* Header */
+    .analysis-container .analysis-header {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .analysis-container .header-right {
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .analysis-container .price-display {
+        text-align: left;
+        margin-top: 12px;
+    }
+
+    .analysis-container .ticker-text {
+        font-size: 42px;
+    }
+
+    .analysis-container .price-value {
+        font-size: 36px;
+    }
+
+    /* Recommendation */
+    .analysis-container .recommendation-display {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .analysis-container .strong-buy {
+        font-size: 32px;
+    }
+
+    /* Grids */
+    .analysis-container .metrics-row,
+    .analysis-container .stats-grid,
+    .analysis-container .tweets-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Charts */
+    .analysis-container .chart-wrapper {
+        padding: 12px;
+        height: 300px;
+        /* Fixed height for mobile */
+    }
+
+    /* Cards */
+    .analysis-container .glass-card {
+        padding: 24px;
+    }
+
+    /* Position Card */
+    .analysis-container .position-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .analysis-container .position-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (hover: none) {
+
+    .analysis-container .metric-box:hover,
+    .analysis-container .tweet-card:hover,
+    .analysis-container .timeframe-tab:hover,
+    .analysis-container .refresh-button:hover,
+    .analysis-container .back-button:hover {
+        transform: none;
+        background: rgba(255, 255, 255, 0.02);
+        /* Reset to default */
+    }
+
+    /* Active states */
+    .analysis-container .timeframe-tab:active {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
