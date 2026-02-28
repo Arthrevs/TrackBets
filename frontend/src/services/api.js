@@ -38,18 +38,27 @@ export async function analyzeStock(ticker) {
                 price: null,
                 change_percent: 0,
                 is_up: true,
+                name: `${ticker} (Offline)`,
+                market_cap: '---',
+                volume: '---',
                 error: error.message
             },
             news: 'Unable to fetch news',
             social: 'Unable to fetch social data',
             analysis: {
-                verdict: 'HOLD',
-                confidence: 50,
+                verdict: {
+                    signal: 'HOLD',
+                    confidence: 50
+                },
+                action: 'Manual review recommended',
                 reasons: ['API unavailable', 'Using fallback data'],
                 ai_explanation: 'Unable to connect to analysis server. Please try again.',
                 risk_level: 'MEDIUM',
                 target_price: null,
-                timeframe: 'N/A'
+                timeframe: 'N/A',
+                flashcard: {
+                    title: 'Offline Mode'
+                }
             },
             source: 'fallback'
         };

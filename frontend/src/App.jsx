@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import LandingPage from './components/LandingPage';
 import AssetForm from './components/AssetForm';
+import AssetInputPage from './components/AssetInputPage';
 import StockDetail from './components/StockDetail';
 import AILoadingScreen from './components/AILoadingScreen';
+import { analyzeStock } from './services/api';
 
-// API Base URL - empty string for relative path (works for both local main.py and production)
-const API_BASE_URL = '';
-
-// --- MOCK DATA FOR LOCALHOST DEV ---
+// --- MOCK DATA FALLBACK (used when backend is unreachable) ---
 const MOCK_DATA = {
     ticker: "MOCK",
     price_data: {
@@ -49,8 +48,46 @@ const MOCK_DATA = {
     }
 };
 
+/**
+ * Normalize backend API response to the shape StockDetail expects.
+ * Backend returns flat: { verdict: "BUY", confidence: 92, ... }
+ * Frontend expects nested: { verdict: { signal: "BUY", confidence: 92 }, ... }
+ */
+function normalizeAnalysisData(apiData) {
+    if (!apiData) return null;
+
+    const analysis = apiData.analysis || {};
+
+    // If verdict is already an object with .signal, it's already in the right shape
+    if (analysis.verdict && typeof analysis.verdict === 'object' && analysis.verdict.signal) {
+        return apiData;
+    }
+
+    // Normalize flat backend response → nested structure for StockDetail
+    const normalizedAnalysis = {
+        ...analysis,
+        verdict: {
+            signal: analysis.verdict || 'HOLD',
+            confidence: analysis.confidence || 50
+        },
+        // Ensure these fields exist for StockDetail
+        action: analysis.action || `${analysis.verdict || 'HOLD'} position recommended`,
+        target_price: analysis.target_price || '---',
+        timeframe: analysis.timeframe || 'Medium-term',
+        risk_level: analysis.risk_level || 'MEDIUM',
+        ai_explanation: analysis.ai_explanation || 'Analysis in progress...',
+        reasons: analysis.reasons || [],
+        flashcard: analysis.flashcard || { title: 'Insight' }
+    };
+
+    return {
+        ...apiData,
+        analysis: normalizedAnalysis
+    };
+}
+
 function App() {
-    const [view, setView] = useState('landing'); // landing | wizard | loading | detail
+    const [view, setView] = useState('landing'); // landing | input | wizard | loading | detail
     const [intent, setIntent] = useState(null); // buy | sell | track
     const [selectedTicker, setSelectedTicker] = useState(null);
     const [wizardData, setWizardData] = useState(null); // Full wizard form data
@@ -58,47 +95,45 @@ function App() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // API Handler - Fetches analysis from Python backend
+    // API Handler - Fetches analysis from Python backend via services/api.js
     const handleAnalyze = async (ticker) => {
         console.log("🚀 Sending request to backend for:", ticker);
         setIsLoading(true);
         setError(null);
-        setAnalysisData(null);
 
         try {
-            // Use GET request with ticker as query parameter
-            const response = await fetch(`${API_BASE_URL}/api/analyze?ticker=${encodeURIComponent(ticker)}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
-
-            const contentType = response.headers.get("content-type");
-            if (!response.ok || (contentType && contentType.includes("text/html"))) {
-                // If not OK or returns HTML (Vite fallback), throw to trigger mock
-                throw new Error(`API Connection Failed: ${response.status}`);
-            }
-
-            const data = await response.json();
+            const data = await analyzeStock(ticker);
             console.log("✅ Data received:", data);
 
-            if (data.error) {
-                throw new Error(data.error);
+            // Check if it's a fallback response from api.js
+            if (data.source === 'fallback' || data.success === false) {
+                console.warn("⚠️ Backend unavailable, using built-in mock data");
+                setAnalysisData({
+                    ...MOCK_DATA,
+                    ticker: ticker,
+                    price_data: {
+                        ...MOCK_DATA.price_data,
+                        name: `${ticker} (Mock Mode)`,
+                        price: (Math.random() * 1000).toFixed(2)
+                    }
+                });
+            } else {
+                // Normalize the live backend data shape for StockDetail
+                setAnalysisData(normalizeAnalysisData(data));
             }
-
-            setAnalysisData(data);
+            setError(null);
         } catch (err) {
-            console.warn("❌ Backend unavailable, using MOCK DATA:", err);
-            // FALLBACK TO MOCK DATA instead of showing error screen
+            console.warn("❌ Unexpected error, using MOCK DATA:", err);
             setAnalysisData({
                 ...MOCK_DATA,
                 ticker: ticker,
                 price_data: {
                     ...MOCK_DATA.price_data,
                     name: `${ticker} (Mock Mode)`,
-                    price: (Math.random() * 1000).toFixed(2) // Randomize price slightly for fun
+                    price: (Math.random() * 1000).toFixed(2)
                 }
             });
-            setError(null); // Clear error so the UI renders
+            setError(null);
         } finally {
             setIsLoading(false);
         }
@@ -119,12 +154,19 @@ function App() {
         if (view === 'detail' || view === 'loading') {
             goHome();
         } else if (view === 'wizard') {
+            setView('input'); // Back to input page
+        } else if (view === 'input') {
             goHome();
         }
     };
 
     const startWizard = (type) => {
         setIntent(type);
+        setView('input'); // Start with the new input page
+    };
+
+    const finishInput = (ticker) => {
+        setSelectedTicker(ticker);
         setView('wizard');
     };
 
@@ -135,10 +177,11 @@ function App() {
         setView('loading'); // Show loading screen first
     };
 
-    // Called when AI loading completes
+    // Called when AI loading animation completes
+    // Start the API call first, THEN switch to detail view
     const onLoadingComplete = () => {
-        setView('detail');
-        handleAnalyze(selectedTicker); // Trigger API call when loading finishes
+        handleAnalyze(selectedTicker); // Fire the API call
+        setView('detail'); // Immediately show detail (it handles isLoading state)
     };
 
     return (
@@ -148,10 +191,15 @@ function App() {
                 <LandingPage onNavigate={(dest, params) => startWizard(params.type)} />
             )}
 
+            {view === 'input' && (
+                <AssetInputPage onComplete={finishInput} />
+            )}
+
             {view === 'wizard' && (
                 <AssetForm
                     intent={intent}
-                    onBack={goHome}
+                    initialTicker={selectedTicker}
+                    onBack={() => setView('input')}
                     onComplete={finishWizard}
                 />
             )}

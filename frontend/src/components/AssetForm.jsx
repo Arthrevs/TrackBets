@@ -5,8 +5,8 @@ import AnimatedWallet from './AnimatedWallet';
 import AnimatedEye from './AnimatedEye';
 import RippleButton from './RippleButton';
 
-const AssetForm = ({ intent, onComplete, onBack }) => {
-  const [step, setStep] = useState(1);
+const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
+  const [step, setStep] = useState(initialTicker ? 2 : 1);
   const [isOwner, setIsOwner] = useState(false);
   const [priceStrategy, setPriceStrategy] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
@@ -15,7 +15,7 @@ const AssetForm = ({ intent, onComplete, onBack }) => {
   const [hoveredCard, setHoveredCard] = useState(null); // Track which ownership card is hovered
   const [hoveredStrategy, setHoveredStrategy] = useState(null); // Track which entry strategy card is hovered
   const [formData, setFormData] = useState({
-    ticker: '',
+    ticker: initialTicker || '',
     bg_price: '',
     units: '',
     target_price: '',
@@ -101,7 +101,13 @@ const AssetForm = ({ intent, onComplete, onBack }) => {
   };
 
   const nextStep = () => setStep(s => s + 1);
-  const prevStep = () => setStep(s => Math.max(1, s - 1));
+  const prevStep = () => {
+    if (step <= 2) {
+      onBack(); // Go back to AssetInputPage
+    } else {
+      setStep(s => s - 1);
+    }
+  };
 
   const handleOwnerSelection = (owned) => {
     setIsOwner(owned);
@@ -169,7 +175,7 @@ const AssetForm = ({ intent, onComplete, onBack }) => {
 
       {/* Back Button */}
       <button
-        onClick={step === 1 ? onBack : prevStep}
+        onClick={prevStep}
         className="fixed top-20 left-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors z-50"
       >
         <ArrowLeft size={20} />
@@ -188,110 +194,6 @@ const AssetForm = ({ intent, onComplete, onBack }) => {
       </div>
 
       <div className="w-full max-w-xl z-10 relative">
-        {/* STEP 1: COMPANY SEARCH */}
-        {step === 1 && (
-          <div className="flex flex-col items-center w-full">
-            {/* Main Card - LIQUID GLASS EFFECT */}
-            {/* Reduced opacity to ~40% (bg-black/40) for better transparency of background */}
-            <div className="rh-card p-12 fade-in bg-black/40 backdrop-blur-[30px] border border-white/10 rounded-[40px] shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] w-full max-w-md relative overflow-hidden">
-              {/* Subtle internal shine/gradient for liquid feel */}
-              <div className="absolute inset-0 bg-linear-to-br from-white/5 to-transparent pointer-events-none" />
-
-              <h2 className="text-4xl font-bold mb-4 font-sans text-white text-center relative z-10">Asset</h2>
-              <p className="text-gray-400 mb-8 text-center text-lg relative z-10">Enter the company name</p>
-
-              <div className="relative mb-8 z-10">
-                <input
-                  autoFocus
-                  type="text"
-                  placeholder="e.g. Zomato, Apple"
-                  value={formData.ticker}
-                  onChange={e => {
-                    const val = e.target.value;
-                    setFormData({ ...formData, ticker: val });
-                    handleSearch(val);
-                  }}
-                  className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white px-6 py-4 text-xl font-sans outline-none focus:bg-white/10 focus:border-[#00FF94]/40 focus:shadow-[0_0_0_4px_rgba(0,255,148,0.1)] transition-all placeholder-white/20 text-center"
-                />
-
-                {/* Dynamic Suggestions List */}
-                {(suggestions.length > 0 || isSearching || searchError) && formData.ticker.length > 2 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-[#1c1c1e] border border-gray-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    {isSearching ? (
-                      <div className="p-4 text-gray-500 text-sm animate-pulse text-center">🔍 Searching...</div>
-                    ) : searchError ? (
-                      <div className="p-4 text-orange-400 text-sm text-center">{searchError.message}</div>
-                    ) : (
-                      suggestions.slice(0, 3).map((s, i) => (
-                        <button
-                          key={i}
-                          onClick={() => selectTicker(s)}
-                          className="w-full text-left p-3 hover:bg-[#2c2c2e] transition-colors border-b border-gray-800 last:border-0 flex justify-between items-center"
-                        >
-                          <span className="font-bold text-white text-sm">{s.name}</span>
-                          <span className="bg-[#5ac53b]/20 text-[#5ac53b] px-2 py-0.5 rounded text-[10px] font-mono">{s.ticker}</span>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-center relative z-10">
-                <button
-                  disabled={!formData.ticker}
-                  onClick={nextStep}
-                  className="group relative w-full h-[56px] bg-[#2A2A2A] rounded-xl overflow-hidden shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {/* FILL BAR ANIMATION */}
-                  <div className="absolute inset-0 bg-[#00FF94] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]" />
-
-                  {/* SIDE BLUR GLOW - only on sides */}
-                  <div className="absolute inset-y-0 left-0 w-4 bg-[#00FF94] blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
-                  <div className="absolute inset-y-0 right-0 w-4 bg-[#00FF94] blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-500" />
-
-                  {/* TEXT AND ARROW */}
-                  <div className="relative flex items-center justify-center gap-2 h-full">
-                    <span className="font-bold text-white group-hover:text-black transition-colors duration-300">NEXT</span>
-                    <div className="w-[18px] h-[18px] flex items-center justify-center overflow-hidden">
-                      <ArrowRight
-                        size={18}
-                        className="text-white group-hover:text-black -translate-x-[150%] group-hover:translate-x-0 transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
-                      />
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* Popular Stocks - Outside the card */}
-            <div className="mt-12 fade-in animation-delay-200">
-              <p className="text-gray-500 uppercase tracking-widest text-xs font-bold text-center mb-6">Popular Assets</p>
-              <div className="flex flex-wrap gap-3 justify-center max-w-2xl px-4">
-                {['Apple', 'Tesla', 'Microsoft', 'NVIDIA', 'Reliance'].map((ticker) => (
-                  <RippleButton
-                    key={ticker}
-                    onClick={() => {
-                      const mapping = {
-                        'Apple': 'AAPL',
-                        'Tesla': 'TSLA',
-                        'Microsoft': 'MSFT',
-                        'NVIDIA': 'NVDA',
-                        'Reliance': 'RELIANCE.NS'
-                      };
-                      const mappedTicker = mapping[ticker] || ticker;
-                      setFormData({ ...formData, ticker: mappedTicker });
-                      handleSearch(mappedTicker);
-                    }}
-                    className="bg-black/40 backdrop-blur-md border border-white/10 text-white/70 px-6 py-3 rounded-full text-sm font-medium hover:bg-[#00FF94]/20 hover:border-[#00FF94] hover:text-[#00FF94] hover:-translate-y-1 hover:scale-105 hover:shadow-[0_0_25px_rgba(0,255,148,0.4)] transition-all duration-300 cursor-pointer shadow-lg"
-                  >
-                    {ticker}
-                  </RippleButton>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* STEP 2: OWNERSHIP CHECK */}
         {step === 2 && (

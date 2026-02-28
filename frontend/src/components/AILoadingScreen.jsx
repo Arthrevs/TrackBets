@@ -54,7 +54,7 @@ const AILoadingScreen = ({ ticker, onComplete }) => {
                 <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[80px] animate-float-delayed"></div>
             </div>
 
-            <div className="relative z-10 flex flex-col items-center max-w-md w-full px-6">
+            <div className="relative z-10 flex flex-col items-center max-w-2xl w-full px-6">
 
                 {/* Central AI Core Animation */}
                 <div className="relative w-32 h-32 mb-12 flex items-center justify-center">
@@ -96,10 +96,10 @@ const AILoadingScreen = ({ ticker, onComplete }) => {
                             <div
                                 key={idx}
                                 className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 transform ${idx === currentStep
-                                        ? 'opacity-100 translate-y-0'
-                                        : idx < currentStep
-                                            ? 'opacity-0 -translate-y-4'
-                                            : 'opacity-0 translate-y-4'
+                                    ? 'opacity-100 translate-y-0'
+                                    : idx < currentStep
+                                        ? 'opacity-0 -translate-y-4'
+                                        : 'opacity-0 translate-y-4'
                                     }`}
                             >
                                 <div className="flex items-center gap-2 text-gray-400">
