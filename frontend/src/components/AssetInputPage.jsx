@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const AssetInputPage = ({ onComplete }) => {
+const AssetInputPage = ({ onComplete, onBack }) => {
     const canvasRef = useRef(null);
     const cursorRef = useRef(null);
     const cursorDotRef = useRef(null);
@@ -231,12 +231,19 @@ const AssetInputPage = ({ onComplete }) => {
                     animation: fadeUp .7s cubic-bezier(.4,0,.2,1) both;
                 }
                 .bsq {
-                    width: 20px; height: 20px; border: 1.5px solid var(--gold); border-radius: 3px;
-                    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+                    width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
                 }
-                .bsq::after { content: '×'; font-family: 'Cormorant Garamond', serif; font-size: 12px; color: var(--gold); line-height: 1; }
                 .bname { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--cream); }
                 .bname b { color: var(--gold); }
+                
+                .back-btn {
+                    display: flex; align-items: center; gap: 6px; padding: 5px 14px; margin-left: 12px;
+                    background: rgba(255,255,255,.035); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+                    border: 1px solid rgba(237,230,218,.08); border-radius: 5px; cursor: none;
+                    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600;
+                    color: var(--c4); letter-spacing: .8px; text-transform: uppercase; transition: all .2s;
+                }
+                .back-btn:hover { border-color: rgba(201,168,76,.22); color: var(--gold); background: rgba(201,168,76,.08); }
                 
                 .stage {
                     position: fixed; inset: 0; z-index: 10;
@@ -320,8 +327,13 @@ const AssetInputPage = ({ onComplete }) => {
             <div id="cd" ref={cursorDotRef}></div>
 
             <div className="brand" onMouseEnter={handleHoverStart} onMouseLeave={handleHoverEnd}>
-                <div className="bsq"></div>
-                <span className="bname">Track<b>Bets</b></span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img src="/assets/trackbets-logo.jpg" alt="TrackBets Logo" style={{ width: '24px', height: '24px', objectFit: 'contain', flexShrink: 0 }} />
+                    <span className="bname">Track<b>Bets</b></span>
+                </div>
+                {onBack && (
+                    <button className="back-btn" onClick={onBack}>← Back</button>
+                )}
             </div>
 
             <div className="stage">

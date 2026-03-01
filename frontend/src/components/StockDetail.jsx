@@ -306,21 +306,23 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
             <div id="cd" ref={cursorDotRef}></div>
 
             <nav className="editorial-nav">
-                <a className="n-logo" href="#" onClick={(e) => { e.preventDefault(); onBack(); }}>
-                    <div className="n-sq"></div>
-                    <span className="n-name">Track<b>Bets</b></span>
-                </a>
-                <div className="n-mid">
+                <div className="n-left">
+                    <a className="n-logo" href="#" onClick={(e) => { e.preventDefault(); onBack(); }}>
+                        <img src="/assets/trackbets-logo.jpg" alt="TrackBets Logo" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                        <span className="n-name">Track<b>Bets</b></span>
+                    </a>
                     <button className="back-btn mag" onClick={onBack}>← Back</button>
+                </div>
+                <div className="n-mid">
                     <div className="n-pill">
                         <span className="np-sym">{ticker}</span>
                         <span className="np-ex">NASDAQ</span>
                     </div>
+                    <div className="n-live"><span className="ldot"></span>Live</div>
                 </div>
                 <div className="n-right">
-                    <div className="n-live"><span className="ldot"></span>Live</div>
-                    <button className="nbtn nbtn-g mag">Sign In</button>
-                    <button className="nbtn nbtn-s mag">New Analysis</button>
+                    <button className="nbtn nbtn-s mag" onClick={onBack}>New Analysis</button>
+
                 </div>
             </nav>
 
