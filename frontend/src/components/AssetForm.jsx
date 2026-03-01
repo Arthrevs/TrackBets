@@ -5,8 +5,9 @@ import AnimatedWallet from './AnimatedWallet';
 import AnimatedEye from './AnimatedEye';
 import RippleButton from './RippleButton';
 
+
 const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
-  const [step, setStep] = useState(initialTicker ? 2 : 1);
+  const [step, setStep] = useState(2);
   const [isOwner, setIsOwner] = useState(false);
   const [priceStrategy, setPriceStrategy] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
@@ -102,8 +103,10 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
 
   const nextStep = () => setStep(s => s + 1);
   const prevStep = () => {
-    if (step <= 2) {
+    if (step === 2) {
       onBack(); // Go back to AssetInputPage
+    } else if (step === 5 && priceStrategy !== 'specific') {
+      setStep(3); // Skip price input if not using specific strategy
     } else {
       setStep(s => s - 1);
     }

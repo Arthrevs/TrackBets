@@ -3,17 +3,18 @@ import gsap from 'gsap';
 import './landing/landing_v2.css';
 import MagneticButton from './landing/MagneticButton';
 import WebGLBackground from './landing/WebGLBackground';
+import MeridianGlobe from './MeridianGlobe';
 
-const LandingPage = ({ onNavigate }) => {
-    const chartRef = useRef(null);
+const LandingPage = ({ user, onNavigate }) => {
+    // chartRef removed — replaced by MeridianGlobe component
     const ringRef = useRef(null);
     const dotRef = useRef(null);
     const headlineRef = useRef(null);
     const [isTickerFocused, setIsTickerFocused] = React.useState(false);
 
     // Navigation handlers
-    const handleStartAnalysis = () => onNavigate && onNavigate('wizard', { type: 'analyze' });
-    const handleLogin = () => onNavigate && onNavigate('wizard', { type: 'login' });
+    const handleStartAnalysis = () => onNavigate && onNavigate('signup', { type: 'analyze' });
+    const handleLogin = () => onNavigate && onNavigate('signup', { type: 'login' });
 
     // --- GSAP TEXT ANIMATION ---
     useEffect(() => {
@@ -110,175 +111,7 @@ const LandingPage = ({ onNavigate }) => {
     // --- BACKGROUND CANVAS (Replaced by WebGLBackground) ---
     // Legacy 2D canvas logic removed.
 
-    // --- CHART ANIMATION ---
-    useEffect(() => {
-        const canvas = chartRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-
-        // Initial setup for high-DPI sharpness
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
-        canvas.style.width = `${rect.width}px`;
-        canvas.style.height = `${rect.height}px`;
-
-        // Generate mock data
-        const genCandles = (n) => {
-            const out = []; let price = 860;
-            for (let i = 0; i < n; i++) {
-                const v = (Math.random() * 18 + 6) * (price > 900 ? -1.1 : price < 800 ? 1.1 : 1);
-                const open = price;
-                const close = price + (Math.random() - 0.46) * v;
-                const high = Math.max(open, close) + Math.random() * v * 0.4;
-                const low = Math.min(open, close) - Math.random() * v * 0.4;
-                const vol = Math.random() * 100 + 30;
-                out.push({ open, high, low, close, vol });
-                price = close;
-            }
-            return out;
-        };
-
-        const candles = genCandles(60);
-        const totalFrames = 60;
-
-        const calcMA = (data, period) => {
-            return data.map((_, i) => {
-                if (i < period - 1) return null;
-                const slice = data.slice(i - period + 1, i + 1);
-                return slice.reduce((s, c) => s + c.close, 0) / period;
-            });
-        };
-
-        let animationFrameId;
-        let frame = 0;
-        let lastUpdate = 0;
-        let isIntro = true;
-
-        const loop = (timestamp) => {
-            if (!lastUpdate) lastUpdate = timestamp;
-            const delta = timestamp - lastUpdate;
-
-            // Update Logic
-            if (delta > 1200) { // Update price every 1.2s
-                const last = candles[candles.length - 1];
-                last.close += (Math.random() - 0.5) * 3;
-                last.high = Math.max(last.high, last.close);
-                last.low = Math.min(last.low, last.close);
-                lastUpdate = timestamp;
-            }
-
-            // Draw
-            // Use local variables to avoid closure staleness if dependencies change (but this useEffect has [])
-            // Canvas dimensions in CSS pixels (rect.width/height)
-            const W = rect.width;
-            const H = rect.height;
-            const padL = 12, padR = 12, padT = 12, padB = 50;
-            const chartH = H - padT - padB - 40;
-            const volH = 35;
-            const chartY = padT;
-            const volY = H - padB - volH;
-
-            ctx.clearRect(0, 0, W, H); // Clear once per frame
-
-            // Show full chart immediately, no intro frame counting
-            const vis = candles;
-
-            if (vis.length >= 2) {
-                const allPrices = vis.flatMap(c => [c.high, c.low]);
-                const maxP = Math.max(...allPrices);
-                const minP = Math.min(...allPrices);
-                const priceRange = maxP - minP || 1;
-                const maxVol = Math.max(...vis.map(c => c.vol));
-
-                const cw = (W - padL - padR) / candles.length;
-                const priceToY = (p) => chartY + (1 - (p - minP) / priceRange) * chartH;
-
-                // Grid
-                ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                for (let i = 0; i <= 4; i++) {
-                    const y = chartY + (i / 4) * chartH;
-                    ctx.moveTo(padL, y); ctx.lineTo(W - padR, y);
-                }
-                ctx.stroke();
-
-                // MA Line
-                const ma = calcMA(vis, 20);
-                ctx.beginPath();
-                ctx.strokeStyle = '#00C2FF';
-                ctx.lineWidth = 1.5;
-                let maStarted = false;
-                ma.forEach((v, i) => {
-                    if (v === null) return;
-                    const x = padL + i * cw + cw / 2;
-                    const y = priceToY(v);
-                    if (!maStarted) { ctx.moveTo(x, y); maStarted = true; }
-                    else ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-
-                // Candles
-                vis.forEach((c, i) => {
-                    const x = padL + i * cw + cw / 2;
-                    const isBull = c.close >= c.open;
-                    const color = isBull ? '#00FF87' : '#FF3B5C';
-
-                    const yOpen = priceToY(c.open);
-                    const yClose = priceToY(c.close);
-                    const yHigh = priceToY(c.high);
-                    const yLow = priceToY(c.low);
-
-                    ctx.beginPath();
-                    ctx.strokeStyle = color + '99';
-                    ctx.lineWidth = 1;
-                    ctx.moveTo(x, yHigh); ctx.lineTo(x, yLow);
-                    ctx.stroke();
-
-                    const bodyH = Math.abs(yOpen - yClose) || 1;
-                    const bodyY = Math.min(yOpen, yClose);
-                    ctx.fillStyle = isBull ? color : color + 'CC';
-                    ctx.fillRect(x - cw * 0.35, bodyY, cw * 0.7, bodyH);
-
-                    const volBarH = (c.vol / maxVol) * volH;
-                    ctx.fillStyle = isBull ? 'rgba(0,255,135,0.3)' : 'rgba(255,59,92,0.3)';
-                    ctx.fillRect(x - cw * 0.35, volY + volH - volBarH, cw * 0.7, volBarH);
-                });
-
-                // Live Price Line
-                if (vis.length > 0) {
-                    const lastClose = vis[vis.length - 1].close;
-                    const py = priceToY(lastClose);
-                    ctx.setLineDash([4, 4]);
-                    ctx.strokeStyle = 'rgba(0,255,135,0.5)';
-                    ctx.lineWidth = 1;
-                    ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(W - padR, py); ctx.stroke();
-                    ctx.setLineDash([]);
-
-                    ctx.fillStyle = '#00FF87';
-                    ctx.fillRect(W - padR - 56, py - 9, 56, 17);
-                    ctx.fillStyle = '#000';
-                    ctx.font = 'bold 9px JetBrains Mono';
-                    ctx.fillText('$' + lastClose.toFixed(2), W - padR - 54, py + 4);
-
-                    // Update DOM text if element exists
-                    const priceEl = document.getElementById('livePrice');
-                    const changeEl = document.getElementById('liveChange');
-                    if (priceEl) priceEl.innerText = '$' + lastClose.toFixed(2);
-                }
-            }
-
-            animationFrameId = requestAnimationFrame(loop);
-        };
-        animationFrameId = requestAnimationFrame(loop);
-
-        return () => {
-            cancelAnimationFrame(animationFrameId);
-        };
-    }, []);
+    // Chart animation removed — replaced by MeridianGlobe component
 
     // --- INTERSECTION OBSERVER ---
     useEffect(() => {
@@ -356,8 +189,8 @@ const LandingPage = ({ onNavigate }) => {
 
             <nav className="landing-nav">
                 <div className="logo-wrap">
-                    <div className="logo-mark">
-                        <svg viewBox="0 0 16 16"><path d="M2 12 L5 7 L8 9 L11 4 L14 4" stroke="#000" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <div className="logo-mark bg-transparent border-none">
+                        <img src="/assets/trackbets-logo.jpg" alt="TrackBets Logo" className="w-full h-full object-contain" />
                     </div>
                     <span className="logo-text">Track<span>Bets</span></span>
                 </div>
@@ -373,7 +206,13 @@ const LandingPage = ({ onNavigate }) => {
                 </ul>
                 <div className="nav-right">
                     <MagneticButton strength={15}>
-                        <button className="btn-solid mag-btn" onClick={handleLogin}>Sign In</button>
+                        {user ? (
+                            <button className="btn-solid mag-btn" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }} onClick={() => onNavigate('input', {})}>
+                                {user.firstName || 'Dashboard'}
+                            </button>
+                        ) : (
+                            <button className="btn-solid mag-btn" onClick={handleLogin}>Sign In</button>
+                        )}
                     </MagneticButton>
                     <div className="nav-gear-icon">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -411,43 +250,7 @@ const LandingPage = ({ onNavigate }) => {
                 </div>
 
                 <div className="hero-right">
-                    <div className="chart-frame">
-                        <div className="chart-header">
-                            <div className="chart-asset">
-                                <span className="chart-ticker">NVDA</span>
-                                <span className="chart-price" id="livePrice">$874.23</span>
-                                <span className="chart-change" id="liveChange">+3.21%</span>
-                            </div>
-                            <div className="chart-intervals">
-                                <span className="interval">1m</span>
-                                <span className="interval">5m</span>
-                                <span className="interval active">1H</span>
-                                <span className="interval">1D</span>
-                            </div>
-                        </div>
-                        <canvas id="chart-canvas" ref={chartRef} width="540" height="280"></canvas>
-                        <div className="chart-footer">
-                            <span className="chart-vol">Vol: 42.7M</span>
-                            <span className="chart-vol">MA(20): <span style={{ color: 'var(--blue)' }}>$861.4</span></span>
-                            <span className="chart-vol">RSI: <span style={{ color: 'var(--amber)' }}>67.2</span></span>
-                        </div>
-                    </div>
-
-                    <div className="verdict-float">
-                        <div className="verdict-chip">BUY</div>
-                        <div className="verdict-info">
-                            <span className="verdict-name">NVDA · Signal</span>
-                            <span className="verdict-conf">94% confidence · just now</span>
-                        </div>
-                    </div>
-
-                    <div className="verdict-float2">
-                        <div className="verdict-chip sell">SELL</div>
-                        <div className="verdict-info">
-                            <span className="verdict-name">META · Signal</span>
-                            <span className="verdict-conf">81% confidence · 2m ago</span>
-                        </div>
-                    </div>
+                    <MeridianGlobe />
                 </div>
             </section>
 
@@ -502,7 +305,7 @@ const LandingPage = ({ onNavigate }) => {
                             ))}
                         </div>
                         <MagneticButton strength={30}>
-                            <button className="card-cta mag-btn">→ Check Risk</button>
+                            <button className="card-cta mag-btn" onClick={handleStartAnalysis}>→ Check Risk</button>
                         </MagneticButton>
                     </div>
 
@@ -525,7 +328,7 @@ const LandingPage = ({ onNavigate }) => {
                             ))}
                         </div>
                         <MagneticButton strength={30}>
-                            <button className="card-cta mag-btn">→ Deep Dive</button>
+                            <button className="card-cta mag-btn" onClick={handleStartAnalysis}>→ Deep Dive</button>
                         </MagneticButton>
                     </div>
                 </div>
