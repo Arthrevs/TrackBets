@@ -1708,3 +1708,513 @@ nav.editorial-nav {
         grid-template-columns: 1fr
     }
 }
+
+/* ═══════════════════════════════════════════════════
+   MODE-SPECIFIC COMPONENTS
+   ═══════════════════════════════════════════════════ */
+
+/* ─── PROS & CONS BOX (analyze mode) ─── */
+.pros-cons-box {
+    padding: 20px;
+}
+
+.pc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.pc-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    transition: background 0.2s;
+}
+
+.pc-pro {
+    background: rgba(0, 255, 136, 0.06);
+    border-left: 2px solid var(--sig);
+}
+
+.pc-con {
+    background: rgba(255, 64, 88, 0.06);
+    border-left: 2px solid var(--rose);
+}
+
+.pc-icon {
+    font-size: 15px;
+    font-weight: 700;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.pc-pro .pc-icon {
+    color: var(--sig);
+}
+
+.pc-con .pc-icon {
+    color: var(--rose);
+}
+
+.pc-text {
+    color: var(--c90);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── RISK STATUS BADGE (risk mode) ─── */
+.risk-badge {
+    padding: 28px 24px;
+}
+
+.rsk-word {
+    font-family: 'Playfair Display', serif;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+}
+
+.rsk-safe .rsk-word,
+.rsk-safe .verdict-rule {
+    color: #00ff88;
+    background: #00ff88 !important;
+}
+
+.rsk-elevated .rsk-word,
+.rsk-elevated .verdict-rule {
+    color: var(--amber);
+    background: var(--amber) !important;
+}
+
+.rsk-danger .rsk-word,
+.rsk-danger .verdict-rule {
+    color: var(--rose);
+    background: var(--rose) !important;
+}
+
+.rsk-indicators {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--c06);
+}
+
+.rsk-ind {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rsk-ind-label {
+    font-size: 11px;
+    color: var(--c50);
+    min-width: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rsk-bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--c06);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.rsk-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease-out;
+}
+
+.rsk-safe .rsk-bar-fill {
+    background: linear-gradient(90deg, #00ff88, #00cc6a);
+}
+
+.rsk-elevated .rsk-bar-fill {
+    background: linear-gradient(90deg, var(--amber), #ff8800);
+}
+
+.rsk-danger .rsk-bar-fill {
+    background: linear-gradient(90deg, var(--rose), #ff2040);
+}
+
+/* ─── RED FLAGS RADAR (risk mode) ─── */
+.red-flags-card {
+    padding: 20px;
+}
+
+.rf-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.rf-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--c06);
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.rf-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.rf-high {
+    border-left: 3px solid var(--rose);
+}
+
+.rf-medium {
+    border-left: 3px solid var(--amber);
+}
+
+.rf-low {
+    border-left: 3px solid var(--sig);
+}
+
+.rf-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.rf-text {
+    flex: 1;
+    font-size: 12px;
+    color: var(--c80);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.rf-sev {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+}
+
+.rf-sev-high {
+    background: rgba(255, 64, 88, 0.15);
+    color: var(--rose);
+}
+
+.rf-sev-medium {
+    background: rgba(255, 180, 0, 0.15);
+    color: var(--amber);
+}
+
+.rf-sev-low {
+    background: rgba(0, 255, 136, 0.1);
+    color: var(--sig);
+}
+
+.rf-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--c40);
+    padding-top: 12px;
+    border-top: 1px solid var(--c06);
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── MAX DRAWDOWN (risk mode) ─── */
+.max-dd-card {
+    padding: 20px;
+}
+
+.dd-content {
+    padding: 8px 0;
+}
+
+.dd-main {
+    text-align: center;
+    padding: 16px 0;
+}
+
+.dd-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    color: var(--rose);
+    line-height: 1;
+}
+
+.dd-label {
+    font-size: 11px;
+    color: var(--c50);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.dd-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--c06);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 16px;
+}
+
+.dd-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    background: var(--c03);
+}
+
+.dd-stat-label {
+    font-size: 9px;
+    color: var(--c40);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.dd-stat-value {
+    font-size: 14px;
+    color: var(--cream);
+    font-family: 'Playfair Display', serif;
+}
+
+/* ─── SUPPORT & RESISTANCE (deep mode) ─── */
+.sr-card {
+    padding: 20px;
+}
+
+.sr-levels {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.sr-row {
+    display: grid;
+    grid-template-columns: 30px 1fr 80px 70px;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+}
+
+.sr-label {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+}
+
+.sr-resistance .sr-label {
+    color: var(--rose);
+}
+
+.sr-pivot .sr-label {
+    color: var(--gold);
+}
+
+.sr-support .sr-label {
+    color: var(--sig);
+}
+
+.sr-bar-wrap {
+    position: relative;
+    height: 4px;
+    background: var(--c06);
+    border-radius: 2px;
+}
+
+.sr-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+}
+
+.sr-marker {
+    position: absolute;
+    top: -4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+.sr-marker-resistance {
+    background: var(--rose);
+    box-shadow: 0 0 8px rgba(255, 64, 88, 0.4);
+}
+
+.sr-marker-pivot {
+    background: var(--gold);
+    box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+}
+
+.sr-marker-support {
+    background: var(--sig);
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+}
+
+.sr-price {
+    font-size: 13px;
+    color: var(--cream);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+}
+
+.sr-strength {
+    font-size: 10px;
+    color: var(--c50);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+}
+
+.sr-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--c50);
+    padding-top: 12px;
+    border-top: 1px solid var(--c06);
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── INSTITUTIONAL FLOW (deep mode) ─── */
+.inst-flow-card {
+    padding: 20px;
+}
+
+.if-content {
+    padding: 8px 0;
+}
+
+.if-bar-section {
+    margin-bottom: 16px;
+}
+
+.if-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.if-buy-label {
+    font-size: 12px;
+    color: var(--sig);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+}
+
+.if-sell-label {
+    font-size: 12px;
+    color: var(--rose);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+}
+
+.if-bar-track {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    gap: 2px;
+}
+
+.if-bar-buy {
+    background: linear-gradient(90deg, #00ff88, #00cc6a);
+    border-radius: 5px 0 0 5px;
+    transition: width 1s ease-out;
+}
+
+.if-bar-sell {
+    background: linear-gradient(90deg, #ff4058, var(--rose));
+    border-radius: 0 5px 5px 0;
+    transition: width 1s ease-out;
+}
+
+.if-net {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--c06);
+    border-bottom: 1px solid var(--c06);
+}
+
+.if-net-label {
+    font-size: 11px;
+    color: var(--c50);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.if-net-value {
+    font-size: 18px;
+    color: var(--sig);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+.if-players {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 12px;
+}
+
+.if-player-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.if-pg-label {
+    font-size: 10px;
+    color: var(--c40);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 2px;
+}
+
+.if-player {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.if-player-buy {
+    background: rgba(0, 255, 136, 0.08);
+    color: var(--sig);
+    border: 1px solid rgba(0, 255, 136, 0.12);
+}
+
+.if-player-sell {
+    background: rgba(255, 64, 88, 0.08);
+    color: var(--rose);
+    border: 1px solid rgba(255, 64, 88, 0.12);
+}
