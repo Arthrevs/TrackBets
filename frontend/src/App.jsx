@@ -223,7 +223,12 @@ function App() {
                     onNavigate={(dest, params) => {
                         if (dest === 'signup') {
                             setIntent(params.type);
-                            navigateTo('signup');
+                            // Skip signup if already logged in (unless they explicitly clicked a logout button, which doesn't exist yet)
+                            if (user) {
+                                navigateTo('input');
+                            } else {
+                                navigateTo('signup');
+                            }
                         } else {
                             startWizard(params.type);
                         }
@@ -268,6 +273,7 @@ function App() {
                     wizardData={wizardData}
                     onBack={goBack}
                     analysisData={analysisData}
+                    mode={intent}
                     isLoading={isLoading}
                     error={error}
                     onRetry={() => handleAnalyze(selectedTicker)}

@@ -1,7 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './StockDetail_Editorial.css';
+import ProsConsBox from './ProsConsBox';
+import RiskStatusBadge from './RiskStatusBadge';
+import RedFlagsRadar from './RedFlagsRadar';
+import MaxDrawdown from './MaxDrawdown';
+import SupportResistanceBox from './SupportResistanceBox';
+import InstitutionalFlow from './InstitutionalFlow';
 
-const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }) => {
+const StockDetail = ({ ticker, onBack, analysisData, mode, isLoading, error, onRetry }) => {
     const canvasRef = useRef(null);
     const chartCanvasRef = useRef(null);
     const cursorRef = useRef(null);
@@ -364,147 +370,190 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                         </div>
 
                         <div className="mg">
-                            <div className="gc rv">
-                                <div className="vc-top">
-                                    <div className="vc-tag">
-                                        <svg viewBox="0 0 9 9"><path d="M4.5 0L5.6 3.2H9L6.4 5.2L7.4 8.5L4.5 6.6L1.6 8.5L2.6 5.2L0 3.2H3.4Z" /></svg>
-                                        TrackBets AI v2.4
+                            {/* ── VERDICT / RISK BADGE ── */}
+                            {mode === 'risk' ? (
+                                <RiskStatusBadge riskLevel={analysis.risk_level} confidence={analysis.verdict.confidence} />
+                            ) : (
+                                <div className="gc rv">
+                                    <div className="vc-top">
+                                        <div className="vc-tag">
+                                            <svg viewBox="0 0 9 9"><path d="M4.5 0L5.6 3.2H9L6.4 5.2L7.4 8.5L4.5 6.6L1.6 8.5L2.6 5.2L0 3.2H3.4Z" /></svg>
+                                            TrackBets AI v2.4
+                                        </div>
+                                        <div className="vc-conf-row">
+                                            <span className="vc-cl">Confidence</span>
+                                            <span className="vc-cn" id="cVal">{analysis.verdict.confidence}%</span>
+                                        </div>
                                     </div>
-                                    <div className="vc-conf-row">
-                                        <span className="vc-cl">Confidence</span>
-                                        <span className="vc-cn" id="cVal">{analysis.verdict.confidence}%</span>
+                                    <div className="vc-hero">
+                                        <div className="verdict-kicker">Verdict</div>
+                                        <div className={`verdict-word ${signalClass}`}>
+                                            {analysis.verdict.signal}
+                                        </div>
+                                        <div className="verdict-rule" style={{ background: isSell ? 'var(--rose)' : (isHold ? 'var(--amber)' : 'var(--gold)') }}></div>
+                                        <div className="verdict-sum">{analysis.action}</div>
                                     </div>
+                                    <div className="vbar-row">
+                                        <div className="vbars" style={{ gap: '2.5px', display: 'flex', alignItems: 'flexEnd' }}>
+                                            {[...Array(8)].map((_, i) => (
+                                                <div
+                                                    key={i}
+                                                    className={`vb ${i < Math.round(analysis.verdict.confidence / 13) ? 'on' : ''} ${isSell ? 'sell' : ''}`}
+                                                    style={{ height: `${12 + i * 4}px` }}
+                                                ></div>
+                                            ))}
+                                        </div>
+                                        <span className="vb-lbl">Signal Strength</span>
+                                    </div>
+                                    {mode !== 'risk' && (
+                                        <div className="vc-metrics">
+                                            <div className="vcm" data-n="01">
+                                                <div className="vcm-lbl">Price Target</div>
+                                                <div className="vcm-v">{stockData.currency}{analysis.target_price}</div>
+                                                <div className="vcm-sub">AI-Calculated</div>
+                                            </div>
+                                            <div className="vcm" data-n="02">
+                                                <div className="vcm-lbl">Horizon</div>
+                                                <div className="vcm-v neutral">{analysis.timeframe}</div>
+                                                <div className="vcm-sub">Medium-term</div>
+                                            </div>
+                                            <div className="vcm" data-n="03">
+                                                <div className="vcm-lbl">Risk Level</div>
+                                                <div className="vcm-v neutral">{analysis.risk_level}</div>
+                                                <div className="vcm-sub">Volatility</div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="vc-hero">
-                                    <div className="verdict-kicker">Verdict</div>
-                                    <div className={`verdict-word ${signalClass}`}>
-                                        {analysis.verdict.signal}
-                                    </div>
-                                    <div className="verdict-rule" style={{ background: isSell ? 'var(--rose)' : (isHold ? 'var(--amber)' : 'var(--gold)') }}></div>
-                                    <div className="verdict-sum">{analysis.action}</div>
-                                </div>
-                                <div className="vbar-row">
-                                    <div className="vbars" style={{ gap: '2.5px', display: 'flex', alignItems: 'flexEnd' }}>
-                                        {[...Array(8)].map((_, i) => (
-                                            <div
-                                                key={i}
-                                                className={`vb ${i < Math.round(analysis.verdict.confidence / 13) ? 'on' : ''} ${isSell ? 'sell' : ''}`}
-                                                style={{ height: `${12 + i * 4}px` }}
-                                            ></div>
-                                        ))}
-                                    </div>
-                                    <span className="vb-lbl">Signal Strength</span>
-                                </div>
-                                <div className="vc-metrics">
-                                    <div className="vcm" data-n="01">
-                                        <div className="vcm-lbl">Price Target</div>
-                                        <div className="vcm-v">{stockData.currency}{analysis.target_price}</div>
-                                        <div className="vcm-sub">AI-Calculated</div>
-                                    </div>
-                                    <div className="vcm" data-n="02">
-                                        <div className="vcm-lbl">Horizon</div>
-                                        <div className="vcm-v neutral">{analysis.timeframe}</div>
-                                        <div className="vcm-sub">Medium-term</div>
-                                    </div>
-                                    <div className="vcm" data-n="03">
-                                        <div className="vcm-lbl">Risk Level</div>
-                                        <div className="vcm-v neutral">{analysis.risk_level}</div>
-                                        <div className="vcm-sub">Volatility</div>
-                                    </div>
-                                </div>
-                            </div>
+                            )}
 
                             <div className="sb-col">
-                                <div className="gc ring-card rv rd1">
-                                    <div className="rc-hd">
-                                        <span className="rc-lbl">AI Confidence</span>
-                                        <span className="rc-grade" id="rGrade">High</span>
-                                    </div>
-                                    <div className="ring-wrap">
-                                        <svg width="150" height="150" viewBox="0 0 150 150">
-                                            <circle className="rt" cx="75" cy="75" r="62" />
-                                            <circle id="rFill" className="rf" cx="75" cy="75" r="62" />
-                                        </svg>
-                                        <div className="rc-ctr">
-                                            <div className="rc-pct"><span id="rNum">0</span><span className="rc-sym">%</span></div>
-                                            <div className="rc-d">Computing</div>
+                                {/* ── AI CONFIDENCE DONUT ── */}
+                                {mode !== 'risk' && (
+                                    <div className="gc ring-card rv rd1">
+                                        <div className="rc-hd">
+                                            <span className="rc-lbl">AI Confidence</span>
+                                            <span className="rc-grade" id="rGrade">High</span>
                                         </div>
-                                    </div>
-                                    <div className="sbl">
-                                        <div className="sbr"><span className="sbr-n">Price Action</span><div className="sbr-t"><div className="sbr-f sf-g" id="b1"></div></div><span className="sbr-v sv-g">High</span></div>
-                                        <div className="sbr"><span className="sbr-n">Sentiment</span><div className="sbr-t"><div className="sbr-f sf-g" id="b2"></div></div><span className="sbr-v sv-g">Bull</span></div>
-                                        <div className="sbr"><span className="sbr-n">Technicals</span><div className="sbr-t"><div className="sbr-f sf-g" id="b3"></div></div><span className="sbr-v sv-g">Strong</span></div>
-                                        <div className="sbr"><span className="sbr-n">Inst. Flow</span><div className="sbr-t"><div className="sbr-f sf-go" id="b4"></div></div><span className="sbr-v sv-go">B-In</span></div>
-                                    </div>
-                                </div>
-                                <div className="gc sig-card rv rd2">
-                                    <div className="sig-hd"><span className="sig-title">Signal Breakdown</span><div className="sig-title-line"></div></div>
-                                    {[
-                                        { name: 'RSI (14)', val: '67.2 · Bull', type: 'g' },
-                                        { name: 'MACD', val: 'Crossover ↑', type: 'g' },
-                                        { name: 'Volume', val: '3.2× avg', type: 'g' },
-                                        { name: 'Bollinger', val: 'Mid-break', type: 'a' },
-                                        { name: 'News Score', val: '82nd pct.', type: 'g' },
-                                        { name: 'Inst. Flow', val: 'Accumulating', type: 'g' }
-                                    ].map((sig, i) => (
-                                        <div key={i} className="sig-row">
-                                            <div className={`si si-${sig.type}`}><svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="2" fill="currentColor" /></svg></div>
-                                            <span className="si-nm">{sig.name}</span>
-                                            <span className={`si-vl sv-${sig.type}`}>{sig.val}</span>
+                                        <div className="ring-wrap">
+                                            <svg width="150" height="150" viewBox="0 0 150 150">
+                                                <circle className="rt" cx="75" cy="75" r="62" />
+                                                <circle id="rFill" className="rf" cx="75" cy="75" r="62" />
+                                            </svg>
+                                            <div className="rc-ctr">
+                                                <div className="rc-pct"><span id="rNum">0</span><span className="rc-sym">%</span></div>
+                                                <div className="rc-d">Computing</div>
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
+                                        {/* Confidence Bars — only in deep mode */}
+                                        {mode === 'deep' && (
+                                            <div className="sbl">
+                                                <div className="sbr"><span className="sbr-n">Price Action</span><div className="sbr-t"><div className="sbr-f sf-g" id="b1"></div></div><span className="sbr-v sv-g">High</span></div>
+                                                <div className="sbr"><span className="sbr-n">Sentiment</span><div className="sbr-t"><div className="sbr-f sf-g" id="b2"></div></div><span className="sbr-v sv-g">Bull</span></div>
+                                                <div className="sbr"><span className="sbr-n">Technicals</span><div className="sbr-t"><div className="sbr-f sf-g" id="b3"></div></div><span className="sbr-v sv-g">Strong</span></div>
+                                                <div className="sbr"><span className="sbr-n">Inst. Flow</span><div className="sbr-t"><div className="sbr-f sf-go" id="b4"></div></div><span className="sbr-v sv-go">B-In</span></div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* ── SIGNAL BREAKDOWN / PROS-CONS ── */}
+                                {mode === 'analyze' && (
+                                    <ProsConsBox analysis={analysis} />
+                                )}
+                                {mode === 'risk' && (
+                                    <MaxDrawdown ticker={ticker} />
+                                )}
+                                {mode === 'deep' && (
+                                    <div className="gc sig-card rv rd2">
+                                        <div className="sig-hd"><span className="sig-title">Signal Breakdown</span><div className="sig-title-line"></div></div>
+                                        {[
+                                            { name: 'RSI (14)', val: '67.2 · Bull', type: 'g' },
+                                            { name: 'MACD', val: 'Crossover ↑', type: 'g' },
+                                            { name: 'Volume', val: '3.2× avg', type: 'g' },
+                                            { name: 'Bollinger', val: 'Mid-break', type: 'a' },
+                                            { name: 'News Score', val: '82nd pct.', type: 'g' },
+                                            { name: 'Inst. Flow', val: 'Accumulating', type: 'g' }
+                                        ].map((sig, i) => (
+                                            <div key={i} className="sig-row">
+                                                <div className={`si si-${sig.type}`}><svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="2" fill="currentColor" /></svg></div>
+                                                <span className="si-nm">{sig.name}</span>
+                                                <span className={`si-vl sv-${sig.type}`}>{sig.val}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         <div className="secs">
-                            <div className="gc rv">
-                                <div className="sec-hd">
-                                    <span className="sec-n">01 —</span>
-                                    <span className="sec-t">AI Analyst Verdict</span>
-                                    <div className="sec-rule"></div>
-                                </div>
-                                <div className="ai-body">
-                                    <div className="ai-acc"></div>
-                                    <div className="ai-content">
-                                        <p className="ai-text">{analysis.ai_explanation}</p>
+                            {/* ── AI ANALYST TEXT — hide for risk mode ── */}
+                            {mode !== 'risk' && (
+                                <div className="gc rv">
+                                    <div className="sec-hd">
+                                        <span className="sec-n">01 —</span>
+                                        <span className="sec-t">AI Analyst Verdict</span>
+                                        <div className="sec-rule"></div>
+                                    </div>
+                                    <div className="ai-body">
+                                        <div className="ai-acc"></div>
+                                        <div className="ai-content">
+                                            <p className="ai-text">{analysis.ai_explanation}</p>
+                                        </div>
+                                    </div>
+                                    <div className="ai-meta">
+                                        <div className="ai-mi"><span className="ai-dot"></span>TrackBets AI v2.4</div>
+                                        <div className="ai-mi"><span className="ai-dot"></span>47 sources scanned</div>
+                                        <div className="ai-mi"><span className="ai-dot"></span>Updated just now</div>
                                     </div>
                                 </div>
-                                <div className="ai-meta">
-                                    <div className="ai-mi"><span className="ai-dot"></span>TrackBets AI v2.4</div>
-                                    <div className="ai-mi"><span className="ai-dot"></span>47 sources scanned</div>
-                                    <div className="ai-mi"><span className="ai-dot"></span>Updated just now</div>
-                                </div>
-                            </div>
+                            )}
+
+                            {/* ── RED FLAGS RADAR — risk mode only ── */}
+                            {mode === 'risk' && (
+                                <RedFlagsRadar ticker={ticker} analysis={analysis} />
+                            )}
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                                <div className="gc rv rd1">
-                                    <div className="sec-hd"><span className="sec-n">02 —</span><span className="sec-t">Quick Insights</span><div className="sec-rule"></div></div>
-                                    <div className="iq">
-                                        {(analysis.reasons && analysis.reasons.length > 0 ? analysis.reasons : [
-                                            "EPS beat estimates", "Sentiment Spike", "Volume Surge", "Risk Flag"
-                                        ]).slice(0, 4).map((r, i) => (
-                                            <div key={i} className="iq-c">
-                                                <div className="iq-top">
-                                                    <span className="iq-t">Insight {i + 1}</span>
-                                                    <div className="iq-ic qi-a"></div>
+                                {/* ── QUICK INSIGHTS — hide for deep & risk mode ── */}
+                                {mode !== 'deep' && mode !== 'risk' && (
+                                    <div className="gc rv rd1">
+                                        <div className="sec-hd"><span className="sec-n">02 —</span><span className="sec-t">Quick Insights</span><div className="sec-rule"></div></div>
+                                        <div className="iq">
+                                            {(analysis.reasons && analysis.reasons.length > 0 ? analysis.reasons : [
+                                                "EPS beat estimates", "Sentiment Spike", "Volume Surge", "Risk Flag"
+                                            ]).slice(0, 4).map((r, i) => (
+                                                <div key={i} className="iq-c">
+                                                    <div className="iq-top">
+                                                        <span className="iq-t">Insight {i + 1}</span>
+                                                        <div className="iq-ic qi-a"></div>
+                                                    </div>
+                                                    <div className="iq-d">{r}</div>
                                                 </div>
-                                                <div className="iq-d">{r}</div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="gc rv rd1">
-                                    <div className="sec-hd"><span className="sec-n">03 —</span><span className="sec-t">Key Statistics</span><div className="sec-rule"></div></div>
-                                    <div className="ss">
-                                        <div className="sc"><div className="sc-l">Market Cap</div><div className="sc-v" style={{ color: 'var(--cream)' }}>{stockData.market_cap}</div><div className="sc-s">Large cap</div></div>
-                                        <div className="sc"><div className="sc-l">Volume 24h</div><div className="sc-v" style={{ color: 'var(--sig)' }}>{stockData.volume}</div><div className="sc-s">High</div></div>
+                                )}
+
+                                {/* ── KEY STATISTICS — show for risk & deep mode ── */}
+                                {mode !== 'analyze' && (
+                                    <div className="gc rv rd1">
+                                        <div className="sec-hd"><span className="sec-n">{mode === 'risk' ? '02' : '03'} —</span><span className="sec-t">Key Statistics</span><div className="sec-rule"></div></div>
+                                        <div className="ss">
+                                            <div className="sc"><div className="sc-l">Market Cap</div><div className="sc-v" style={{ color: 'var(--cream)' }}>{stockData.market_cap}</div><div className="sc-s">Large cap</div></div>
+                                            <div className="sc"><div className="sc-l">Volume 24h</div><div className="sc-v" style={{ color: 'var(--sig)' }}>{stockData.volume}</div><div className="sc-s">High</div></div>
+                                        </div>
+                                        <div className="ss" style={{ borderTop: '1px solid var(--c06)' }}>
+                                            <div className="sc"><div className="sc-l">P/E Ratio</div><div className="sc-v" style={{ color: 'var(--amber)' }}>62.4×</div><div className="sc-s">Premium</div></div>
+                                            <div className="sc"><div className="sc-l">52W High</div><div className="sc-v" style={{ color: 'var(--gold)' }}>Nearby</div><div className="sc-s">Resistance</div></div>
+                                        </div>
                                     </div>
-                                    <div className="ss" style={{ borderTop: '1px solid var(--c06)' }}>
-                                        <div className="sc"><div className="sc-l">P/E Ratio</div><div className="sc-v" style={{ color: 'var(--amber)' }}>62.4×</div><div className="sc-s">Premium</div></div>
-                                        <div className="sc"><div className="sc-l">52W High</div><div className="sc-v" style={{ color: 'var(--gold)' }}>Nearby</div><div className="sc-s">Resistance</div></div>
-                                    </div>
-                                </div>
+                                )}
+
+                                {/* ── SUPPORT & RESISTANCE — deep mode only ── */}
+                                {mode === 'deep' && (
+                                    <SupportResistanceBox stockData={stockData} analysis={analysis} />
+                                )}
                             </div>
 
                             <div className="gc rv rd2">
@@ -529,30 +578,42 @@ const StockDetail = ({ ticker, onBack, analysisData, isLoading, error, onRetry }
                                 </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '14px' }}>
-                                <div className="gc rv rd2">
-                                    <div className="sec-hd"><span className="sec-n">05 —</span><span className="sec-t">Community Sentiment</span><div className="sec-rule"></div></div>
-                                    <div className="sent">
-                                        {displaySocial.map((item, i) => (
-                                            <div key={i} className="sc2">
-                                                <div className="sc2-h">
-                                                    <span className="sc2-src">{item.source}</span>
-                                                    <span className="sc2-t">{item.time || 'Today'}</span>
+                            <div style={{ display: 'grid', gridTemplateColumns: mode === 'deep' ? '3fr 2fr' : '1fr', gap: '14px' }}>
+                                {/* ── COMMUNITY SENTIMENT — show for risk & deep ── */}
+                                {mode !== 'analyze' && (
+                                    <div className="gc rv rd2">
+                                        <div className="sec-hd"><span className="sec-n">{mode === 'risk' ? '04' : '05'} —</span><span className="sec-t">Community Sentiment</span><div className="sec-rule"></div></div>
+                                        <div className="sent">
+                                            {displaySocial.map((item, i) => (
+                                                <div key={i} className="sc2">
+                                                    <div className="sc2-h">
+                                                        <span className="sc2-src">{item.source}</span>
+                                                        <span className="sc2-t">{item.time || 'Today'}</span>
+                                                    </div>
+                                                    <div className="sc2-q">"{item.content}"</div>
+                                                    <span className={`stag ${item.sentiment === 'Bullish' ? 't-b' : 't-n'}`}>{item.sentiment}</span>
                                                 </div>
-                                                <div className="sc2-q">"{item.content}"</div>
-                                                <span className={`stag ${item.sentiment === 'Bullish' ? 't-b' : 't-n'}`}>{item.sentiment}</span>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="gc rv rd2">
-                                    <div className="sec-hd"><span className="sec-n">06 —</span><span className="sec-t">Analyst Ratings</span><div className="sec-rule"></div></div>
-                                    <div className="ag">
-                                        <div className="ac"><div className="ac-f">Goldman Sachs</div><div className="ac-r ar-b">Buy</div><div className="ac-tgt">Target: <b>$280</b></div><div className="ac-dt">3 days ago</div></div>
-                                        <div className="ac"><div className="ac-f">Morgan Stanley</div><div className="ac-r ar-b">Overweight</div><div className="ac-tgt">Target: <b>$310</b></div><div className="ac-dt">1 week ago</div></div>
-                                        <div className="ac"><div className="ac-f">JPMorgan</div><div className="ac-r ar-h">Neutral</div><div className="ac-tgt">Target: <b>$245</b></div><div className="ac-dt">5 days ago</div></div>
+                                )}
+
+                                {/* ── ANALYST RATINGS — deep mode only ── */}
+                                {mode === 'deep' && (
+                                    <div className="gc rv rd2">
+                                        <div className="sec-hd"><span className="sec-n">06 —</span><span className="sec-t">Analyst Ratings</span><div className="sec-rule"></div></div>
+                                        <div className="ag">
+                                            <div className="ac"><div className="ac-f">Goldman Sachs</div><div className="ac-r ar-b">Buy</div><div className="ac-tgt">Target: <b>$280</b></div><div className="ac-dt">3 days ago</div></div>
+                                            <div className="ac"><div className="ac-f">Morgan Stanley</div><div className="ac-r ar-b">Overweight</div><div className="ac-tgt">Target: <b>$310</b></div><div className="ac-dt">1 week ago</div></div>
+                                            <div className="ac"><div className="ac-f">JPMorgan</div><div className="ac-r ar-h">Neutral</div><div className="ac-tgt">Target: <b>$245</b></div><div className="ac-dt">5 days ago</div></div>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
+
+                                {/* ── INSTITUTIONAL FLOW — deep mode only ── */}
+                                {mode === 'deep' && (
+                                    <InstitutionalFlow ticker={ticker} />
+                                )}
                             </div>
                         </div>
                     </div>
