@@ -36,7 +36,7 @@ const StockDetail = ({ ticker, onBack, analysisData, mode, isLoading, error, onR
     // Parse social tweets if available
     const socialText = typeof analysisData?.social === 'string' ? analysisData.social : "";
     const socialItems = socialText.split('\n').filter(line => line.trim().length > 10).map((line, i) => ({
-        source: line.includes('[r/') ? 'r/WallStreetBets' : 'Twitter',
+        source: line.includes('[r/') ? '🤖 r/WallStreetBets' : '𝕏 Analysts',
         handle: '@User' + i,
         content: line.replace(/^\d+\.\s+/, ''),
         sentiment: 'Bullish'
@@ -44,9 +44,9 @@ const StockDetail = ({ ticker, onBack, analysisData, mode, isLoading, error, onR
 
     // If no social items, use mock from user design for display purposes
     const displaySocial = socialItems.length > 0 ? socialItems : [
-        { source: '@TeslaInvestor', content: `$${ticker} breaking above resistance on monster volume. This is the move we've been waiting for.`, sentiment: 'Bullish', time: '2h ago' },
-        { source: 'r/WallStreetBets', content: 'RSI oversold last week, momentum shifting now. Buying this dip. Calls loaded.', sentiment: 'Bullish', time: '4h ago' },
-        { source: 'MarketWatch', content: 'Sector rally continues. Analyst upgrades follow stronger delivery data.', sentiment: 'Neutral', time: '5h ago' }
+        { source: '𝕏 @AlphaSeeker', content: `$${ticker} algorithmic options flow showing massive unhedged calls for next Friday. Smart money is clearly positioning for a breakout.`, sentiment: 'Bullish', time: '12m ago' },
+        { source: '🤖 r/WallStreetBets', content: `Just yolo'd my entire portfolio into $${ticker} 0DTEs based on this setup. IV crush is real but the momentum divergence is undeniable today.`, sentiment: 'Bullish', time: '41m ago' },
+        { source: '𝕏 @BearTrap', content: `Retail is getting overwhelmingly bullish on $${ticker} at local tops. Usually a contrarian signal for a mid-week pullback. Watching the 50 MA.`, sentiment: 'Bearish', time: '1h ago' }
     ];
 
     // WebGL Background Effect
