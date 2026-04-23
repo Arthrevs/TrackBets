@@ -563,8 +563,8 @@ nav.editorial-nav {
 ══════════════════════════════════════ */
 .gc {
     background: var(--glass);
-    backdrop-filter: blur(24px) saturate(140%);
     -webkit-backdrop-filter: blur(24px) saturate(140%);
+    backdrop-filter: blur(24px) saturate(140%);
     border: 1px solid var(--brd);
     border-radius: 12px;
     overflow: hidden;
@@ -1315,8 +1315,8 @@ nav.editorial-nav {
     gap: 3px;
     padding: 3px;
     background: rgba(237, 230, 218, .03);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--brd);
     border-radius: 8px;
 }

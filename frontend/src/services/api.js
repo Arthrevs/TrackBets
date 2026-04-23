@@ -28,40 +28,7 @@ export async function analyzeStock(ticker) {
         return await response.json();
     } catch (error) {
         console.error('[API] analyzeStock error:', error);
-
-        // Return fallback mock response so UI doesn't break
-        return {
-            success: false,
-            ticker: ticker,
-            currency: ticker.includes('.NS') || ticker.includes('.BO') ? '₹' : '$',
-            price_data: {
-                price: null,
-                change_percent: 0,
-                is_up: true,
-                name: `${ticker} (Offline)`,
-                market_cap: '---',
-                volume: '---',
-                error: error.message
-            },
-            news: 'Unable to fetch news',
-            social: 'Unable to fetch social data',
-            analysis: {
-                verdict: {
-                    signal: 'HOLD',
-                    confidence: 50
-                },
-                action: 'Manual review recommended',
-                reasons: ['API unavailable', 'Using fallback data'],
-                ai_explanation: 'Unable to connect to analysis server. Please try again.',
-                risk_level: 'MEDIUM',
-                target_price: null,
-                timeframe: 'N/A',
-                flashcard: {
-                    title: 'Offline Mode'
-                }
-            },
-            source: 'fallback'
-        };
+        throw error;
     }
 }
 
@@ -88,9 +55,7 @@ export async function getMockTickers() {
         const response = await fetch(`${API_BASE_URL}/api/mock-tickers`);
         return await response.json();
     } catch (error) {
-        return {
-            mock_tickers: ['ZOMATO.NS', 'TSLA', 'RELIANCE.NS']
-        };
+        throw error;
     }
 }
 

@@ -501,7 +501,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
                     <div className="p-6 flex items-center gap-5 relative z-10">
                       {/* Icon */}
                       <div
-                        className="flex-shrink-0 w-[54px] h-[54px] rounded-[14px] flex items-center justify-center transition-all duration-500 group-hover:scale-[1.08] group-hover:rotate-[5deg]"
+                        className="shrink-0 w-[54px] h-[54px] rounded-[14px] flex items-center justify-center transition-all duration-500 group-hover:scale-[1.08] group-hover:rotate-[5deg]"
                         style={{
                           background: 'rgba(255, 255, 255, 0.04)',
                           border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -523,7 +523,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
                       </div>
 
                       {/* Status */}
-                      <div className="flex-shrink-0 flex items-center gap-2 opacity-0 -translate-x-2.5 transition-all duration-400 group-hover:opacity-100 group-hover:translate-x-0">
+                      <div className="shrink-0 flex items-center gap-2 opacity-0 -translate-x-2.5 transition-all duration-400 group-hover:opacity-100 group-hover:translate-x-0">
                         {/* Badge */}
                         <div
                           className="font-mono text-[10px] font-bold tracking-[0.05em] uppercase px-3 py-1.5 rounded-lg transition-all duration-400"

@@ -113,7 +113,7 @@ const AILoadingScreen = ({ ticker, onComplete }) => {
                     {/* Progress Bar */}
                     <div className="relative h-1 w-full bg-gray-900/50 rounded-full overflow-hidden backdrop-blur-sm border border-white/5">
                         <div
-                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-lando-main via-green-400 to-lando-main"
+                            className="absolute top-0 left-0 h-full bg-linear-to-r from-lando-main via-green-400 to-lando-main"
                             style={{ width: `${progress}%` }}
                         >
                             <div className="absolute inset-0 bg-white/30 animate-shimmer"></div>

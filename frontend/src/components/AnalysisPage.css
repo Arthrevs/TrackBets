@@ -193,8 +193,8 @@
 /* Glass Card Base */
 .analysis-container .glass-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 32px;
@@ -322,12 +322,14 @@
     background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .analysis-container .strong-buy.wait {
     background: linear-gradient(135deg, #F59E0B 0%, #B45309 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 

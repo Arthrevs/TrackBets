@@ -7,47 +7,7 @@ import AILoadingScreen from './components/AILoadingScreen';
 import SignUpPage from './components/SignUpPage';
 import { analyzeStock } from './services/api';
 
-// --- MOCK DATA FALLBACK (used when backend is unreachable) ---
-const MOCK_DATA = {
-    ticker: "MOCK",
-    price_data: {
-        price: 245.30,
-        change_percent: 3.45,
-        currency: "$",
-        name: "Mock Company Inc.",
-        market_cap: "780B",
-        volume: "125M"
-    },
-    analysis: {
-        verdict: {
-            signal: "STRONG BUY",
-            confidence: 92
-        },
-        action: "Accumulate on dips",
-        target_price: "285.00",
-        timeframe: "3-6 Months",
-        risk_level: "HIGH",
-        ai_explanation: "This is MOCK DATA because the backend is not reachable. The asset shows strong momentum breaking above key resistance levels. Delivery numbers exceeded expectations and margin improvements suggest operational efficiency. Technical indicators RSI and MACD are bullish.",
-        reasons: [
-            "Earnings beat estimates by 5%",
-            "New product launch faster than expected",
-            "Regulatory approval limits downside"
-        ],
-        flashcard: { title: "Growth Catalyst" }
-    },
-    social: "1. [r/wallstreetbets] THIS STOCK TO THE MOON 🚀\n2. @TechAnalyst: Buying the dip here.\n3. MarketWatch: Sector rally continues.",
-    graph_data: {
-        points: [
-            { time: '9:30', value: 238 },
-            { time: '10:00', value: 240 },
-            { time: '11:00', value: 242 },
-            { time: '12:00', value: 241 },
-            { time: '13:00', value: 243 },
-            { time: '14:00', value: 244 },
-            { time: '15:00', value: 245.30 }
-        ]
-    }
-};
+
 
 /**
  * Normalize backend API response to the shape StockDetail expects.
@@ -111,35 +71,19 @@ function App() {
             const data = await analyzeStock(ticker);
             console.log("✅ Data received:", data);
 
-            // Check if it's a fallback response from api.js
-            if (data.source === 'fallback' || data.success === false) {
-                console.warn("⚠️ Backend unavailable, using built-in mock data");
-                setAnalysisData({
-                    ...MOCK_DATA,
-                    ticker: ticker,
-                    price_data: {
-                        ...MOCK_DATA.price_data,
-                        name: `${ticker} (Mock Mode)`,
-                        price: (Math.random() * 1000).toFixed(2)
-                    }
-                });
+            if (data.success === false) {
+                console.warn(`⚠️ Backend error for ${ticker}:`, data.error || 'Unknown error');
+                setError(data.error || 'Failed to analyze stock. Please try again.');
+                setAnalysisData(null);
             } else {
                 // Normalize the live backend data shape for StockDetail
                 setAnalysisData(normalizeAnalysisData(data));
+                setError(null);
             }
-            setError(null);
         } catch (err) {
-            console.warn("❌ Unexpected error, using MOCK DATA:", err);
-            setAnalysisData({
-                ...MOCK_DATA,
-                ticker: ticker,
-                price_data: {
-                    ...MOCK_DATA.price_data,
-                    name: `${ticker} (Mock Mode)`,
-                    price: (Math.random() * 1000).toFixed(2)
-                }
-            });
-            setError(null);
+            console.error("❌ API request failed:", err);
+            setError('Unable to reach the analysis server. Please check your connection or wait for the backend to start.');
+            setAnalysisData(null);
         } finally {
             setIsLoading(false);
         }

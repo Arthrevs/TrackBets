@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(_project_root, "api"))
 
 from backend.scrapers import get_stock_price, get_aggregated_sentiment
 from backend.brain import rule_based_verdict

@@ -877,7 +877,7 @@ nav {
 
     /* Analysis Card - Optimization */
     .analysis-card {
-        min-height: auto;
+        min-height: 0;
         /* Allow flexible height */
         padding: 24px;
         /* Disable tilt/3D transforms here if JS enabled them, but CSS hover is already handled above */

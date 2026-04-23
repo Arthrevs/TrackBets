@@ -35,19 +35,12 @@ const StockDetail = ({ ticker, onBack, analysisData, mode, isLoading, error, onR
 
     // Parse social tweets if available
     const socialText = typeof analysisData?.social === 'string' ? analysisData.social : "";
-    const socialItems = socialText.split('\n').filter(line => line.trim().length > 10).map((line, i) => ({
+    const displaySocial = socialText.split('\n').filter(line => line.trim().length > 10).map((line, i) => ({
         source: line.includes('[r/') ? '🤖 r/WallStreetBets' : '𝕏 Analysts',
         handle: '@User' + i,
         content: line.replace(/^\d+\.\s+/, ''),
         sentiment: 'Bullish'
     })).slice(0, 3);
-
-    // If no social items, use mock from user design for display purposes
-    const displaySocial = socialItems.length > 0 ? socialItems : [
-        { source: '𝕏 @AlphaSeeker', content: `$${ticker} algorithmic options flow showing massive unhedged calls for next Friday. Smart money is clearly positioning for a breakout.`, sentiment: 'Bullish', time: '12m ago' },
-        { source: '🤖 r/WallStreetBets', content: `Just yolo'd my entire portfolio into $${ticker} 0DTEs based on this setup. IV crush is real but the momentum divergence is undeniable today.`, sentiment: 'Bullish', time: '41m ago' },
-        { source: '𝕏 @BearTrap', content: `Retail is getting overwhelmingly bullish on $${ticker} at local tops. Usually a contrarian signal for a mid-week pullback. Watching the 50 MA.`, sentiment: 'Bearish', time: '1h ago' }
-    ];
 
     // WebGL Background Effect
     useEffect(() => {
