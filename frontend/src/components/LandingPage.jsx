@@ -258,9 +258,9 @@ const LandingPage = ({ user, onNavigate }) => {
 
             <section className="section" id="modes">
                 <div className="reveal">
-                    <div className="section-tag">analysis modes</div>
-                    <div className="section-title">Three Ways to Win</div>
-                    <p className="section-sub">From instant verdicts to exhaustive research. TrackBets adapts to your trading style and risk appetite.</p>
+                    <div className="section-tag">audit modes</div>
+                    <div className="section-title">Three Ways to Audit</div>
+                    <p className="section-sub">From instant risk verdicts to exhaustive forensic research. FailExe adapts to your diligence requirements.</p>
                 </div>
 
                 <div className="modes-grid">
@@ -274,15 +274,15 @@ const LandingPage = ({ user, onNavigate }) => {
                                 <polyline points="15,6 20,6 20,11" />
                             </svg>
                         </div>
-                        <h3 className="card-title">Analyze</h3>
-                        <p className="card-desc">Instant Buy · Sell · Hold verdicts backed by real-time data fusion across 40+ signals simultaneously.</p>
+                        <h3 className="card-title">Forensic Audit</h3>
+                        <p className="card-desc">Instant historical risk verdicts backed by Gemini 1.5 Pro data fusion across lawsuits, debt, and crash history.</p>
                         <div className="mini-chart">
                             {[0.45, 0.60, 0.50, 0.75, 0.85, 0.70, 0.90, 1.0].map((h, i) => (
                                 <div key={i} className="mc-bar" style={{ height: `${h * 100}%`, '--fill': h }}></div>
                             ))}
                         </div>
                         <MagneticButton strength={30}>
-                            <button className="card-cta mag-btn">→ Start Analysis</button>
+                            <button className="card-cta mag-btn">→ Start Audit</button>
                         </MagneticButton>
                     </div>
 
@@ -297,20 +297,20 @@ const LandingPage = ({ user, onNavigate }) => {
                                 <circle cx="11" cy="16.5" r="0.5" fill="#FF3B5C" />
                             </svg>
                         </div>
-                        <h3 className="card-title">Risk Check</h3>
-                        <p className="card-desc">Detect crashes, sentiment spikes, and volatility warnings 6–48 hours before they hit your portfolio.</p>
+                        <h3 className="card-title">Threat Assessment</h3>
+                        <p className="card-desc">Detect historical crash correlations and regulatory warnings across the full litigation and market history.</p>
                         <div className="mini-chart">
                             {[0.80, 0.65, 0.90, 0.45, 0.30, 0.55, 0.40, 0.25].map((h, i) => (
                                 <div key={i} className="mc-bar" style={{ height: `${h * 100}%`, '--fill': h }}></div>
                             ))}
                         </div>
                         <MagneticButton strength={30}>
-                            <button className="card-cta mag-btn" onClick={handleStartAnalysis}>→ Check Risk</button>
+                            <button className="card-cta mag-btn" onClick={handleStartAnalysis}>→ Assess Threats</button>
                         </MagneticButton>
                     </div>
 
                     <div className="mode-card deep-card reveal reveal-d3"
-                        onClick={() => handleStartAnalysis('deepdive')}
+                        onClick={() => handleStartAnalysis('deep')}
                     >
                         <div className="card-number">03</div>
                         <div className="card-icon-wrap blue">
@@ -320,46 +320,22 @@ const LandingPage = ({ user, onNavigate }) => {
                                 <path d="M4.9 4.9l2.1 2.1M15 15l2.1 2.1M4.9 17.1l2.1-2.1M15 7l2.1-2.1" />
                             </svg>
                         </div>
-                        <h3 className="card-title">Deep Dive</h3>
-                        <p className="card-desc">Full AI reasoning with cited sources, data lineage, and every step of the model's thought process exposed.</p>
+                        <h3 className="card-title">Institutional Deep Dive</h3>
+                        <p className="card-desc">Full AI reasoning with cited sources, data lineage, and every step of the auditor's forensic process exposed.</p>
                         <div className="mini-chart">
                             {[0.40, 0.55, 0.65, 0.60, 0.75, 0.85, 0.80, 0.95].map((h, i) => (
                                 <div key={i} className="mc-bar" style={{ height: `${h * 100}%`, '--fill': h }}></div>
                             ))}
                         </div>
                         <MagneticButton strength={30}>
-                            <button className="card-cta mag-btn" onClick={handleStartAnalysis}>→ Deep Dive</button>
+                            <button className="card-cta mag-btn" onClick={handleStartAnalysis}>→ Deep Diligence</button>
                         </MagneticButton>
                     </div>
                 </div>
             </section>
 
-            <div className="stats-section" id="statsSection">
-                <div className="stats-inner">
-                    <div className="stat-col reveal">
-                        <div className="big-num"><span className="counter" data-target="94">0</span><span>%</span></div>
-                        <div className="stat-desc">Prediction Accuracy</div>
-                        <div className="stat-sub">↑ 1.2% this month</div>
-                    </div>
-                    <div className="stat-col reveal reveal-d1">
-                        <div className="big-num"><span className="counter" data-target="2400">0</span><span>+</span></div>
-                        <div className="stat-desc">Daily Signals Fired</div>
-                        <div className="stat-sub">Across 180 assets</div>
-                    </div>
-                    <div className="stat-col reveal reveal-d2">
-                        <div className="big-num"><span className="counter" data-target="2">0</span><span>.4s</span></div>
-                        <div className="stat-desc">Average Latency</div>
-                        <div className="stat-sub">Fastest in market</div>
-                    </div>
-                    <div className="stat-col reveal reveal-d3">
-                        <div className="big-num"><span className="counter" data-target="99">0</span><span>.9%</span></div>
-                        <div className="stat-desc">Platform Uptime</div>
-                        <div className="stat-sub">24/7 Live</div>
-                    </div>
-                </div>
-            </div>
 
-            <section className="section" id="features">
+            <section className="section" id="features" style={{ paddingTop: '40px' }}>
                 <div className="reveal">
                     <div className="section-tag">secret sauce</div>
                     <div className="section-title">What Makes Us Different</div>

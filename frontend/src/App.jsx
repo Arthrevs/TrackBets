@@ -62,13 +62,13 @@ function App() {
     const [error, setError] = useState(null);
 
     // API Handler - Fetches analysis from Python backend via services/api.js
-    const handleAnalyze = async (ticker) => {
-        console.log("🚀 Sending request to backend for:", ticker);
+    const handleAnalyze = async (ticker, mode) => {
+        console.log("🚀 Sending request to backend for:", ticker, "mode:", mode);
         setIsLoading(true);
         setError(null);
 
         try {
-            const data = await analyzeStock(ticker);
+            const data = await analyzeStock(ticker, mode);
             console.log("✅ Data received:", data);
 
             if (data.success === false) {
@@ -154,7 +154,7 @@ function App() {
     // Called when AI loading animation completes
     // Start the API call first, THEN switch to detail view
     const onLoadingComplete = () => {
-        handleAnalyze(selectedTicker); // Fire the API call
+        handleAnalyze(selectedTicker, intent); // Fire the API call with mode
         navigateTo('detail'); // Immediately show detail (it handles isLoading state)
     };
 

@@ -10,11 +10,16 @@ const API_BASE_URL =
 /**
  * Analyze a stock ticker via the backend API
  * @param {string} ticker - Stock ticker symbol
+ * @param {string} [mode] - Analysis mode: 'analyze', 'risk', or 'deep' (maps to 'deep_dive' on backend)
  * @returns {Promise<Object>} Analysis result
  */
-export async function analyzeStock(ticker) {
+export async function analyzeStock(ticker, mode) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/analyze?ticker=${encodeURIComponent(ticker)}`, {
+        let url = `${API_BASE_URL}/api/analyze?ticker=${encodeURIComponent(ticker)}`;
+        if (mode === 'deep') {
+            url += '&mode=deep_dive';
+        }
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

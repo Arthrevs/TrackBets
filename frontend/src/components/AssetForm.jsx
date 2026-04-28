@@ -201,8 +201,8 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
         {/* STEP 2: OWNERSHIP CHECK */}
         {step === 2 && (
           <div className="rh-card p-10 text-center fade-in bg-black/10 backdrop-blur-[20px] border border-white/10 rounded-[32px]">
-            <h2 className="text-3xl font-bold mb-2 text-white">Current Status</h2>
-            <p className="text-gray-500 mb-8">Do you already own this asset</p>
+            <h2 className="text-3xl font-bold mb-2 text-white">Audit Target Status</h2>
+            <p className="text-gray-500 mb-8">Is this asset currently in your portfolio?</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* I Hold This Card */}
@@ -222,8 +222,8 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
 
                 <div className="relative z-10">
                   <AnimatedWallet isHovered={hoveredCard === 'hold'} />
-                  <div className="font-bold text-lg mb-1 text-white">I Hold This</div>
-                  <div className="text-xs text-gray-400">Add to my portfolio</div>
+                  <div className="font-bold text-lg mb-1 text-white">Internal Portfolio</div>
+                  <div className="text-xs text-gray-400">Audit a held position</div>
                 </div>
               </button>
 
@@ -244,8 +244,8 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
 
                 <div className="relative z-10">
                   <AnimatedEye isHovered={hoveredCard === 'watch'} />
-                  <div className="font-bold text-lg mb-1 text-white">Just Watching</div>
-                  <div className="text-xs text-gray-400">Track without owning</div>
+                  <div className="font-bold text-lg mb-1 text-white">External Assessment</div>
+                  <div className="text-xs text-gray-400">Assess without holding</div>
                 </div>
               </button>
             </div>
@@ -692,73 +692,34 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
                   Investment Details
                 </h1>
                 <p className="text-[#A8A8B8] text-base font-light tracking-tight">
-                  Tell us about your position
+                  Configure assessment parameters
                 </p>
               </div>
 
               {/* Form */}
               <div className="flex flex-col gap-8">
-                {/* Avg Buy Price */}
+                {/* Assessment Timeframe */}
                 <div className="form-group-premium relative">
                   <label className="block text-xs font-medium text-[#B0B0C0] mb-3.5 uppercase tracking-[0.12em] transition-colors duration-300">
-                    Avg Buy Price
+                    Assessment Timeframe
                   </label>
-                  <input
-                    autoFocus
-                    type="number"
-                    placeholder="e.g. 150.00"
-                    value={formData.bg_price}
+                  <select
+                    value={formData.bg_price || ''}
                     onChange={e => setFormData({ ...formData, bg_price: e.target.value })}
-                    className="w-full rounded-2xl px-6 py-[18px] text-[17px] font-light text-white outline-none transition-all duration-400"
+                    className="w-full rounded-2xl px-6 py-[18px] text-[17px] font-light text-white outline-none transition-all duration-400 appearance-none"
                     style={{
                       background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(20, 20, 25, 0.3) 100%)',
                       border: '1.5px solid rgba(255, 255, 255, 0.08)',
                       boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.3)',
                     }}
-                    onFocus={(e) => {
-                      e.target.style.background = 'linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(20, 20, 25, 0.4) 100%)';
-                      e.target.style.borderColor = '#6EF195';
-                      e.target.style.boxShadow = 'inset 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(110, 241, 149, 0.15), 0 0 32px rgba(110, 241, 149, 0.2)';
-                      e.target.style.transform = 'translateY(-2px)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.background = 'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(20, 20, 25, 0.3) 100%)';
-                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-                      e.target.style.boxShadow = 'inset 0 2px 8px rgba(0, 0, 0, 0.3)';
-                      e.target.style.transform = 'translateY(0)';
-                    }}
-                  />
-                </div>
-
-                {/* Units Owned */}
-                <div className="form-group-premium relative">
-                  <label className="block text-xs font-medium text-[#B0B0C0] mb-3.5 uppercase tracking-[0.12em] transition-colors duration-300">
-                    Units Owned
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 10"
-                    value={formData.units}
-                    onChange={e => setFormData({ ...formData, units: e.target.value })}
-                    className="w-full rounded-2xl px-6 py-[18px] text-[17px] font-light text-white outline-none transition-all duration-400"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(20, 20, 25, 0.3) 100%)',
-                      border: '1.5px solid rgba(255, 255, 255, 0.08)',
-                      boxShadow: 'inset 0 2px 8px rgba(0, 0, 0, 0.3)',
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.background = 'linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(20, 20, 25, 0.4) 100%)';
-                      e.target.style.borderColor = '#6EF195';
-                      e.target.style.boxShadow = 'inset 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(110, 241, 149, 0.15), 0 0 32px rgba(110, 241, 149, 0.2)';
-                      e.target.style.transform = 'translateY(-2px)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.background = 'linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(20, 20, 25, 0.3) 100%)';
-                      e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-                      e.target.style.boxShadow = 'inset 0 2px 8px rgba(0, 0, 0, 0.3)';
-                      e.target.style.transform = 'translateY(0)';
-                    }}
-                  />
+                  >
+                    <option value="" disabled>Select timeframe...</option>
+                    <option value="1Y">1-Year Historical</option>
+                    <option value="3Y">3-Year Historical</option>
+                    <option value="5Y">5-Year Historical</option>
+                    <option value="10Y">10-Year Historical</option>
+                    <option value="MAX">Full History (Max)</option>
+                  </select>
                 </div>
 
                 {/* Submit Button */}
@@ -866,10 +827,10 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
                     textShadow: '0 2px 20px rgba(255, 255, 255, 0.1)',
                   }}
                 >
-                  Investment Goal?
+                  Audit Objective?
                 </h1>
                 <p className="text-[#A8A8B8] text-base font-light tracking-tight">
-                  What's your timeframe and approach?
+                  What is the purpose of this forensic review?
                 </p>
               </div>
 
@@ -877,45 +838,45 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
               <div className="grid grid-cols-2 gap-3.5 mb-9">
                 {[
                   {
-                    id: 'Long Term',
+                    id: 'M&A Diligence',
                     icon: (
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
                         <line x1="12" y1="1" x2="12" y2="23"></line>
                         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                       </svg>
                     ),
-                    indicator: '1Y+',
-                    description: 'Strategic positions with extended holding periods',
-                    risk: 'LOW',
-                    freq: 'RARE'
+                    indicator: 'DUE',
+                    description: 'Pre-acquisition forensic risk evaluation',
+                    risk: 'CRIT',
+                    freq: 'DEEP'
                   },
                   {
-                    id: 'Swing Trade',
+                    id: 'Regulatory Check',
                     icon: (
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
                         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                       </svg>
                     ),
-                    indicator: '1W-3M',
-                    description: 'Capture momentum over days to weeks',
+                    indicator: 'REG',
+                    description: 'Compliance and regulatory exposure scan',
                     risk: 'MED',
                     freq: 'MED'
                   },
                   {
-                    id: 'Quick Scalp',
+                    id: 'Long-Term Risk',
                     icon: (
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                         <polyline points="17 6 23 6 23 12"></polyline>
                       </svg>
                     ),
-                    indicator: 'MIN',
-                    description: 'High-frequency micro-movements',
-                    risk: 'HIGH',
-                    freq: 'HIGH'
+                    indicator: '5Y+',
+                    description: 'Multi-year historical risk trajectory',
+                    risk: 'LOW',
+                    freq: 'RARE'
                   },
                   {
-                    id: 'Hedge',
+                    id: 'Competitor Threat',
                     icon: (
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px]">
                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -923,8 +884,8 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
                         <line x1="15" y1="9" x2="9" y2="15"></line>
                       </svg>
                     ),
-                    indicator: 'VAR',
-                    description: 'Risk mitigation & portfolio protection',
+                    indicator: 'THR',
+                    description: 'Competitive landscape vulnerability analysis',
                     risk: 'PROT',
                     freq: 'LOW'
                   }
@@ -1107,7 +1068,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
                 }}
               >
                 <Check size={18} className="relative z-10" />
-                <span className="relative z-10">Start {isOwner ? 'Tracking' : 'Watching'}</span>
+                <span className="relative z-10">Begin {isOwner ? 'Portfolio Audit' : 'Assessment'}</span>
               </button>
             </div>
 

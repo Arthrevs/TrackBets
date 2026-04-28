@@ -2,16 +2,16 @@
 TrackBets Backend - AI Brain Module
 =====================================
 Google Gemini-powered financial analysis with strict JSON output.
+Uses the official google-genai SDK.
 """
 
 import os
 import json
 import time
 from typing import Dict, Optional
-from dotenv import load_dotenv
-import google.generativeai as genai
 
-load_dotenv()
+from api.backend.gemini_client import get_client, get_default_model, is_configured, generate
+from google.genai import types
 
 
 # ============================================================================
@@ -33,10 +33,8 @@ def rule_based_verdict(market_data: dict) -> tuple:
 def generate_flashcard(ticker: str, user_context: dict, market_data: dict, deep_analysis: dict) -> dict:
     """Generate a flashcard with AI analysis or fallback."""
     
-    api_key = os.getenv("GOOGLE_API_KEY")
-    
     # Use Fallback if no key
-    if not api_key:
+    if not is_configured():
         signal, reasons = rule_based_verdict(market_data)
         return {
             "verdict": {"signal": signal, "confidence": 50, "action": "Review Fundamentals (Fallback)"},
@@ -48,9 +46,9 @@ def generate_flashcard(ticker: str, user_context: dict, market_data: dict, deep_
             "ai_explanation": "Verdict generated using rule-based metrics due to missing AI key."
         }
 
-    # Configure Gemini
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    # Get Gemini client from centralized module
+    client = get_client()
+    model_name = get_default_model()
     
     context_str = f"""
     STOCK: {ticker}
@@ -77,7 +75,10 @@ def generate_flashcard(ticker: str, user_context: dict, market_data: dict, deep_
     # Retry Logic (3 attempts)
     for attempt in range(3):
         try:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+            )
             clean_text = response.text.replace("```json", "").replace("```", "").strip()
             return json.loads(clean_text)
         except:
@@ -106,26 +107,25 @@ class FinancialAnalyst:
     """
     
     def __init__(self):
-        self.api_key = os.getenv("GOOGLE_API_KEY")
-        self.model = None
-        if self.api_key:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel("gemini-2.5-flash")
+        self.client = None
+        self.model_name = get_default_model()
+        if is_configured():
+            self.client = get_client()
         else:
-            print("[BRAIN] Warning: GOOGLE_API_KEY not found in environment")
+            print("[BRAIN] Warning: GEMINI_API_KEY not found in environment")
 
     def get_ticker_identity(self, ticker: str) -> Dict:
         """
         Get a Gen Z style identity/overview for the stock.
         """
-        if not self.model:
+        if not self.client:
             return {
                 "overview": "API Key missing, can't roast this stock.",
                 "currency_symbol": "$",
                 "currency_code": "USD"
             }
             
-        system_prompt = f"""You are a financial backend API. You MUST return data in valid, parseable JSON format only. Do not add markdown formatting like ```json or ```. Do not include any conversational text outside the JSON object.
+        system_instruction = f"""You are a financial backend API. You MUST return data in valid, parseable JSON format only. Do not add markdown formatting like ```json or ```. Do not include any conversational text outside the JSON object.
 Analyze the stock ticker: '{ticker}'."""
 
         user_prompt = f"""Return a JSON object with exactly these 3 keys:
@@ -143,7 +143,13 @@ Example Output:
 Target Ticker: {ticker}"""
 
         try:
-            response = self.model.generate_content(f"{system_prompt}\n\n{user_prompt}")
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=user_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                ),
+            )
             return self._parse_response(response.text)
             
         except Exception as e:
@@ -158,10 +164,10 @@ Target Ticker: {ticker}"""
         """
         Identify the correct stock ticker from a user search query.
         """
-        if not self.model:
+        if not self.client:
             return {"error": "AI not configured"}
             
-        system_prompt = """You are a smart Stock Ticker Resolver for the NSE (India). Your goal is to convert company names into Yahoo Finance tickers, strictly favoring '.NS' for Indian stocks.
+        system_instruction = """You are a smart Stock Ticker Resolver for the NSE (India). Your goal is to convert company names into Yahoo Finance tickers, strictly favoring '.NS' for Indian stocks.
 
         CORE LOGIC:
         1. **The "Update" Rule (Rebrands):**
@@ -195,7 +201,13 @@ Target Ticker: {ticker}"""
         }}"""
         
         try:
-            response = self.model.generate_content(f"{system_prompt}\n\n{user_prompt}")
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=user_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                ),
+            )
             return self._parse_response(response.text)
         except Exception as e:
             print(f"[BRAIN] Search error: {e}")
@@ -212,12 +224,12 @@ Target Ticker: {ticker}"""
         Returns:
             Dict with verdict, confidence, reasons, and explanation
         """
-        if not self.model:
-            return self._fallback_response("AI model not available - GOOGLE_API_KEY missing")
+        if not self.client:
+            return self._fallback_response("AI model not available - GEMINI_API_KEY missing")
         
         try:
-            # System prompt enforcing strict JSON output
-            system_prompt = """You are a senior financial analyst at a prestigious hedge fund. 
+            # System instruction enforcing strict JSON output
+            system_instruction = """You are a senior financial analyst at a prestigious hedge fund. 
 You analyze stocks using fundamental analysis, technical indicators, news sentiment, and social media trends.
 
 CRITICAL INSTRUCTION: You MUST respond with ONLY valid JSON. No markdown, no code blocks, no explanation outside the JSON.
@@ -248,9 +260,14 @@ Guidelines:
 
 Remember: Respond with ONLY the JSON object, no other text."""
 
-            # Generate response using Gemini
-            full_prompt = f"{system_prompt}\n\n{user_prompt}"
-            response = self.model.generate_content(full_prompt)
+            # Generate response using Gemini (new SDK)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=user_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                ),
+            )
             
             # Parse JSON from response
             return self._parse_response(response.text)

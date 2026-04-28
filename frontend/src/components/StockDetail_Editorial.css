@@ -2218,3 +2218,210 @@ nav.editorial-nav {
     color: var(--rose);
     border: 1px solid rgba(255, 64, 88, 0.12);
 }
+
+/* ══════════════════════════════════════
+   DEEP DIVE — Institutional Compliance Panel
+══════════════════════════════════════ */
+.stock-detail-container .deep-dive-panel {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    background: rgba(4, 5, 12, 0.85);
+    border: 1px solid var(--brd);
+    border-top: 2px solid rgba(232, 80, 91, 0.35);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 14px;
+}
+
+.stock-detail-container .dd-col {
+    padding: 16px 20px;
+}
+
+.stock-detail-container .dd-col:first-child {
+    border-right: 1px solid var(--c06);
+}
+
+.stock-detail-container .dd-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--c4);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stock-detail-container .dd-header::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    background: var(--rose);
+    flex-shrink: 0;
+}
+
+.stock-detail-container .dd-fines {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--rose);
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+    line-height: 1;
+}
+
+.stock-detail-container .dd-fines-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(232, 80, 91, 0.6);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.stock-detail-container .dd-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.stock-detail-container .dd-table tr {
+    border-bottom: 1px solid var(--c06);
+    transition: background 0.15s;
+}
+
+.stock-detail-container .dd-table tr:last-child {
+    border-bottom: none;
+}
+
+.stock-detail-container .dd-table tr:hover {
+    background: rgba(237, 230, 218, 0.02);
+}
+
+.stock-detail-container .dd-table td {
+    padding: 7px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--c6);
+    line-height: 1.45;
+    vertical-align: top;
+}
+
+.stock-detail-container .dd-table td:first-child {
+    width: 24px;
+    color: var(--c2);
+    padding-right: 8px;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.stock-detail-container .dd-reg-sentiment {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 12px;
+}
+
+.stock-detail-container .dd-reg-sentiment.hostile {
+    background: rgba(232, 80, 91, 0.12);
+    color: var(--rose);
+    border: 1px solid rgba(232, 80, 91, 0.2);
+}
+
+.stock-detail-container .dd-reg-sentiment.adversarial {
+    background: rgba(232, 168, 58, 0.1);
+    color: var(--amber);
+    border: 1px solid rgba(232, 168, 58, 0.2);
+}
+
+.stock-detail-container .dd-reg-sentiment.cooperative {
+    background: var(--sigd);
+    color: var(--sig);
+    border: 1px solid var(--sigb);
+}
+
+.stock-detail-container .dd-reg-sentiment.neutral {
+    background: var(--lift);
+    color: var(--c6);
+    border: 1px solid var(--brd);
+}
+
+.stock-detail-container .dd-sec-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stock-detail-container .dd-sec-label::before {
+    content: '▸';
+    color: var(--amber);
+    font-size: 10px;
+}
+
+.stock-detail-container .dd-sec-box {
+    background: rgba(2, 3, 8, 0.9);
+    border: 1px solid rgba(237, 230, 218, 0.06);
+    border-radius: 6px;
+    padding: 14px 16px;
+    max-height: 220px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    line-height: 1.65;
+    color: var(--c6);
+    letter-spacing: 0.2px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--c2) transparent;
+}
+
+.stock-detail-container .dd-sec-box::-webkit-scrollbar {
+    width: 4px;
+}
+
+.stock-detail-container .dd-sec-box::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.stock-detail-container .dd-sec-box::-webkit-scrollbar-thumb {
+    background: var(--c2);
+    border-radius: 2px;
+}
+
+.stock-detail-container .dd-sec-excerpt {
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--c06);
+}
+
+.stock-detail-container .dd-sec-excerpt:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.stock-detail-container .dd-sec-excerpt-num {
+    color: var(--amber);
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 6px;
+}
