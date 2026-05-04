@@ -435,7 +435,6 @@ nav.editorial-nav {
 }
 
 /* Left: ticker + meta */
-.th-l {}
 
 .th-row {
     display: flex;
@@ -860,8 +859,8 @@ nav.editorial-nav {
     stroke: var(--gold);
     stroke-width: 8;
     stroke-linecap: round;
-    stroke-dasharray: 326;
-    stroke-dashoffset: 326;
+    stroke-dasharray: 390;
+    stroke-dashoffset: 390;
     transition: stroke-dashoffset 2s cubic-bezier(.25, .46, .45, .94)
 }
 
@@ -2388,8 +2387,6 @@ nav.editorial-nav {
     line-height: 1.65;
     color: var(--c6);
     letter-spacing: 0.2px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--c2) transparent;
 }
 
 .stock-detail-container .dd-sec-box::-webkit-scrollbar {
@@ -2424,4 +2421,104 @@ nav.editorial-nav {
     letter-spacing: 1px;
     display: block;
     margin-bottom: 6px;
+}
+
+/* ─── MOBILE STYLES ─── */
+@media(max-width: 768px) {
+    nav.editorial-nav {
+        padding: 0 16px;
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 58px;
+    }
+
+    .n-mid {
+        display: none;
+    }
+
+    .stock-detail-container .inner {
+        margin-left: 0;
+        padding: 0 20px;
+    }
+
+    .chapter-rail {
+        display: none;
+    }
+
+    .th-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .th-sym {
+        font-size: 48px;
+    }
+
+    .th-price {
+        font-size: 42px;
+    }
+
+    .th-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .th-r {
+        text-align: left;
+    }
+
+    .mg {
+        grid-template-columns: 1fr;
+    }
+
+    .vc-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .vcm {
+        border-right: none;
+        border-bottom: 1px solid var(--c06);
+    }
+    
+    .vcm:last-child {
+        border-bottom: none;
+    }
+
+    .verdict-word {
+        font-size: 56px;
+    }
+
+    .tick {
+        display: none;
+    }
+
+    .deep-dive-panel {
+        flex-direction: column;
+    }
+    
+    .deep-dive-panel .dd-col {
+        border-right: none;
+        border-bottom: 1px dashed var(--c06);
+    }
+    
+    .deep-dive-panel .dd-col:last-child {
+        border-bottom: none;
+    }
+    
+    .gtabs {
+        display: none;
+    }
+    
+    .ch-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    /* Hide cursor elements on mobile */
+    #cr, #cd {
+        display: none !important;
+    }
 }

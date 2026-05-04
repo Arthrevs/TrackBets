@@ -200,7 +200,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
 
         {/* STEP 2: OWNERSHIP CHECK */}
         {step === 2 && (
-          <div className="rh-card p-10 text-center fade-in bg-black/10 backdrop-blur-[20px] border border-white/10 rounded-[32px]">
+          <div className="rh-card p-6 md:p-10 text-center fade-in bg-black/10 backdrop-blur-[20px] border border-white/10 rounded-[24px] md:rounded-[32px]">
             <h2 className="text-3xl font-bold mb-2 text-white">Audit Target Status</h2>
             <p className="text-gray-500 mb-8">Is this asset currently in your portfolio?</p>
 
@@ -210,7 +210,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
                 onClick={() => handleOwnerSelection(true)}
                 onMouseEnter={() => setHoveredCard('hold')}
                 onMouseLeave={() => setHoveredCard(null)}
-                className={`group relative p-8 rounded-xl border overflow-hidden transition-all duration-300 ${hoveredCard === 'hold'
+                className={`group relative p-6 md:p-8 rounded-xl border overflow-hidden transition-all duration-300 ${hoveredCard === 'hold'
                   ? 'bg-white/40 backdrop-blur-[30px] border-[#5ac53b] -translate-y-2 shadow-2xl scale-105'
                   : 'bg-transparent border-gray-800 hover:border-[#5ac53b]/50'
                   }`}
@@ -232,7 +232,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
                 onClick={() => handleOwnerSelection(false)}
                 onMouseEnter={() => setHoveredCard('watch')}
                 onMouseLeave={() => setHoveredCard(null)}
-                className={`group relative p-8 rounded-xl border overflow-hidden transition-all duration-300 ${hoveredCard === 'watch'
+                className={`group relative p-6 md:p-8 rounded-xl border overflow-hidden transition-all duration-300 ${hoveredCard === 'watch'
                   ? 'bg-white/40 backdrop-blur-[30px] border-blue-400 -translate-y-2 shadow-2xl scale-105'
                   : 'bg-transparent border-gray-800 hover:border-blue-400/50'
                   }`}
@@ -327,7 +327,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
 
             {/* Premium Card with glassmorphism */}
             <div
-              className="relative overflow-hidden rounded-[28px] p-14 border-[1.5px] border-white/12"
+              className="relative overflow-hidden rounded-[24px] md:rounded-[28px] p-6 md:p-14 border-[1.5px] border-white/12"
               style={{
                 background: 'linear-gradient(135deg, rgba(40, 40, 48, 0.85) 0%, rgba(30, 30, 38, 0.75) 100%)',
                 backdropFilter: 'blur(40px) saturate(180%)',
@@ -347,7 +347,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
               {/* Header */}
               <div className="text-center mb-11">
                 <h1
-                  className="text-[44px] font-semibold mb-3 leading-tight"
+                  className="text-3xl md:text-[44px] font-semibold mb-3 leading-tight"
                   style={{
                     fontFamily: "'Playfair Display', serif",
                     letterSpacing: '-0.03em',
@@ -658,7 +658,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
           <div className="fade-in relative">
             {/* Premium Card with glassmorphism */}
             <div
-              className="relative overflow-hidden rounded-[28px] p-14 border-[1.5px] border-white/12"
+              className="relative overflow-hidden rounded-[24px] md:rounded-[28px] p-6 md:p-14 border-[1.5px] border-white/12"
               style={{
                 background: 'linear-gradient(135deg, rgba(40, 40, 48, 0.85) 0%, rgba(30, 30, 38, 0.75) 100%)',
                 backdropFilter: 'blur(40px) saturate(180%)',
@@ -678,7 +678,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
               {/* Header */}
               <div className="mb-12">
                 <h1
-                  className="text-[44px] font-semibold mb-3 leading-tight"
+                  className="text-3xl md:text-[44px] font-semibold mb-3 leading-tight"
                   style={{
                     fontFamily: "'Playfair Display', serif",
                     letterSpacing: '-0.03em',
@@ -767,7 +767,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
 
         {/* STEP 4: SPECIFIC PRICE INPUT (only if user chose 'specific') */}
         {step === 4 && priceStrategy === 'specific' && (
-          <div className="rh-card p-10 fade-in bg-[#141419]/80 backdrop-blur-3xl border border-white/10 rounded-[32px]">
+          <div className="rh-card p-6 md:p-10 fade-in bg-[#141419]/80 backdrop-blur-3xl border border-white/10 rounded-[24px] md:rounded-[32px]">
             <h2 className="text-3xl font-bold mb-2 text-white">Target Price</h2>
             <p className="text-gray-500 mb-6">Enter your ideal entry point</p>
 
@@ -796,7 +796,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
           <div className="fade-in relative">
             {/* Premium Card with glassmorphism */}
             <div
-              className="relative overflow-hidden rounded-[28px] p-14 border-[1.5px] border-white/12"
+              className="relative overflow-hidden rounded-[24px] md:rounded-[28px] p-6 md:p-14 border-[1.5px] border-white/12"
               style={{
                 background: 'linear-gradient(135deg, rgba(40, 40, 48, 0.85) 0%, rgba(30, 30, 38, 0.75) 100%)',
                 backdropFilter: 'blur(40px) saturate(180%)',
@@ -816,7 +816,7 @@ const AssetForm = ({ intent, onComplete, onBack, initialTicker }) => {
               {/* Header */}
               <div className="text-center mb-11">
                 <h1
-                  className="text-[44px] font-semibold mb-3 leading-tight"
+                  className="text-3xl md:text-[44px] font-semibold mb-3 leading-tight"
                   style={{
                     fontFamily: "'Playfair Display', serif",
                     letterSpacing: '-0.03em',

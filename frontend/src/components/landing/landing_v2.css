@@ -2026,3 +2026,76 @@ h1.headline {
         padding: 40px;
     }
 }
+
+/* ─── MOBILE STYLES ─── */
+@media(max-width: 768px) {
+    .landing-nav {
+        padding: 0 20px;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .nav-status {
+        display: none;
+    }
+
+    .hero {
+        padding: 100px 20px 60px;
+    }
+
+    h1.headline {
+        font-size: 36px;
+        margin-bottom: 16px;
+    }
+
+    .hero-desc {
+        font-size: 15px;
+        margin-bottom: 24px;
+    }
+
+    .hero-cta {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .hero-cta button {
+        width: 100%;
+    }
+
+    .section {
+        padding: 60px 20px;
+    }
+
+    .section-title {
+        font-size: 32px;
+    }
+
+    .terminal-title {
+        font-size: 12px;
+    }
+
+    .t-line {
+        font-size: 12px;
+    }
+
+    .custom-cursor {
+        display: none !important;
+    }
+
+    .cta-headline {
+        font-size: 40px;
+    }
+
+    .cta-btns {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .ticker-bar.focused {
+        height: auto;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+}

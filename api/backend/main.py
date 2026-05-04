@@ -6,11 +6,11 @@ import os
 import uvicorn
 
 from api.backend.gemini_client import forensic_analyze, forensic_analyze_deep, is_configured
-from api.backend.mock_data.loader import get_mock_history, list_available_tickers
+from api.backend.scrapers import fetch_all_data
 
 app = FastAPI(
     title="Forensic Due Diligence API",
-    description="Enterprise-grade forensic analysis powered by Google Gemini",
+    description="Enterprise-grade forensic analysis powered by Google Gemini and Live Data",
     version="1.0.0",
 )
 
@@ -33,25 +33,24 @@ async def health_check():
         "status": "ok",
         "service": "ForensicDD-Backend",
         "gemini_configured": is_configured(),
-        "available_tickers": list_available_tickers(),
+        "mode": "live_data",
     }
 
 
 @app.get("/api/forensic-tickers")
 async def get_forensic_tickers():
-    """Return the list of tickers available in the forensic database."""
-    return {"tickers": list_available_tickers()}
+    """Return a list of suggested tickers, since the database is now live."""
+    return {"tickers": ["AAPL", "NVDA", "TSLA", "MSFT", "META", "GOOG"]}
 
 
 @app.get("/api/analyze")
 async def analyze_stock(ticker: str, mode: str = "standard"):
     """
-    Forensic due diligence analysis endpoint.
+    Forensic due diligence analysis endpoint using Live Data.
 
-    1. Validates the ticker against the mock database.
-    2. Fetches the hardcoded forensic history profile.
-    3. Sends the profile to Gemini 1.5 Pro for institutional audit.
-    4. Returns strictly typed JSON for the React frontend.
+    1. Fetches live pricing, news, and sentiment via scrapers.
+    2. Sends the live data to Gemini 1.5 Pro to generate a forensic profile.
+    3. Returns strictly typed JSON for the React frontend.
 
     Query params:
         ticker: Stock ticker symbol (e.g. AAPL, NVDA, TSLA)
@@ -70,21 +69,21 @@ async def analyze_stock(ticker: str, mode: str = "standard"):
             detail="Gemini AI is not configured. Set GEMINI_API_KEY in .env.",
         )
 
-    # 2. Fetch mock forensic history
-    profile = get_mock_history(ticker)
-    if profile is None:
-        available = list_available_tickers()
+    # 2. Fetch live data
+    try:
+        scraped_data = fetch_all_data(ticker)
+    except Exception as e:
         raise HTTPException(
-            status_code=404,
-            detail=f"Ticker '{ticker}' not found in forensic database. Available: {available}",
+            status_code=502,
+            detail=f"Failed to fetch live market data for '{ticker}': {str(e)}",
         )
 
     # 3. Run Gemini forensic analysis (standard or deep dive)
     try:
         if is_deep:
-            analysis = forensic_analyze_deep(ticker, profile)
+            analysis = forensic_analyze_deep(ticker, scraped_data)
         else:
-            analysis = forensic_analyze(ticker, profile)
+            analysis = forensic_analyze(ticker, scraped_data)
     except Exception as e:
         print(f"[MAIN] Gemini analysis error for {ticker} (mode={mode}): {e}")
         raise HTTPException(
@@ -92,36 +91,34 @@ async def analyze_stock(ticker: str, mode: str = "standard"):
             detail=f"Gemini analysis failed: {str(e)[:200]}",
         )
 
-    # 4. Build response
+    # 4. Build response directly from AI output
+    # Since the prompt forces AI to output company_name, sector, and profile_summary
     response_data = {
         "success": True,
         "ticker": ticker,
-        "company_name": profile.get("company_name", ticker),
-        "sector": profile.get("sector", "Unknown"),
+        "company_name": analysis.get("company_name", ticker),
+        "sector": analysis.get("sector", "Unknown"),
         "analysis": {
-            "risk_score": analysis["risk_score"],
-            "historical_vulnerabilities": analysis["historical_vulnerabilities"],
-            "verdict": analysis["verdict"],
-            "rationale": analysis["rationale"],
+            "risk_score": analysis.get("risk_score", 50),
+            "historical_vulnerabilities": analysis.get("historical_vulnerabilities", []),
+            "verdict": analysis.get("verdict", "Warning"),
+            "rationale": analysis.get("rationale", "Unable to generate clear rationale."),
         },
-        "profile_summary": {
-            "lawsuits_count": len(profile.get("key_lawsuits", [])),
-            "product_failures_count": len(profile.get("product_failures", [])),
-            "crash_events_count": len(profile.get("crash_reactions", [])),
-            "risk_flags_count": len(profile.get("risk_flags", [])),
-            "debt_to_equity": profile.get("debt_profile", {}).get("debt_to_equity"),
-            "credit_rating": profile.get("debt_profile", {}).get("credit_rating"),
-        },
-        "source": "mock_forensic_db",
+        "profile_summary": analysis.get("profile_summary", {
+            "lawsuits_count": 0,
+            "product_failures_count": 0,
+            "crash_events_count": 0,
+            "risk_flags_count": 0,
+            "debt_to_equity": "N/A",
+            "credit_rating": "N/A",
+        }),
+        "source": "live_ai_generation",
     }
 
     # 5. Add deep dive data if applicable
     if is_deep:
         response_data["analysis"]["institutional_breakdown"] = analysis.get(
             "institutional_breakdown", {}
-        )
-        response_data["institutional_metrics"] = profile.get(
-            "institutional_metrics", {}
         )
 
     return response_data

@@ -12,76 +12,10 @@ const StockDetail = ({ ticker, onBack, analysisData, mode, isLoading, error, onR
     const chartCanvasRef = useRef(null);
     const cursorRef = useRef(null);
     const cursorDotRef = useRef(null);
+    const [chartTab, setChartTab] = useState('1M');
 
-    // Hardcoded demo fallbacks per ticker (hackathon failsafe)
-    const DEMO_FALLBACKS = {
-        TSLA: {
-            price_data: { price: '374.98', change_percent: -2.34, name: 'Tesla, Inc.', currency: '$', market_cap: '$541B', volume: '112M' },
-            analysis: { verdict: { signal: 'WARNING', confidence: 87 }, target_price: '195.00', timeframe: '5-Year Historical', risk_level: 'ELEVATED', ai_explanation: 'Tesla presents material forensic risk due to extensive litigation history, Autopilot safety investigations, and CEO governance controversies. Debt profile has improved but regulatory exposure remains elevated.', reasons: ['SEC investigation into Autopilot safety claims (2021-2024)', 'Solar City acquisition lawsuit — $2.6B settlement', 'Repeated NHTSA recalls across multiple vehicle lines'], flashcard: { title: 'Risk Assessment' },
-                institutional_breakdown: {
-                    total_regulatory_fines: '$2.06B',
-                    key_litigation: [
-                        'SEC v. Elon Musk (2018) — Securities fraud consent decree, $40M combined fines',
-                        'In re Tesla Autopilot Litigation (2022-present) — DOJ criminal fraud investigation',
-                        'Diaz v. Tesla Inc. (2021) — Racial discrimination, $137M verdict reduced to $3.2M',
-                        'NHTSA Recall 23V-838 (2023) — 2M+ vehicles, Autopilot driver monitoring deficiency'
-                    ],
-                    regulatory_sentiment: 'Adversarial'
-                }
-            },
-            institutional_metrics: {
-                regulatory_fines_usd: '$2.06B',
-                raw_sec_excerpts: [
-                    'Note 15 — Commitments and Contingencies (Form 10-K, FY2025): The Company is defendant in numerous legal proceedings, including securities class actions, product liability claims, employment discrimination suits, and government investigations. As of December 31, 2024, the Company had accrued approximately $1.4 billion for estimated losses from pending litigation and regulatory matters.',
-                    'Note 22 — Segment Reporting (Form 10-K, FY2025): Automotive regulatory credit revenue totaled $1.79 billion for the year ended December 31, 2024, representing approximately 7.2% of total automotive revenue. Excluding regulatory credit revenue, automotive gross margin was approximately 15.3% for Q4 2024.'
-                ]
-            },
-        },
-        AAPL: {
-            price_data: { price: '189.42', change_percent: 1.12, name: 'Apple Inc.', currency: '$', market_cap: '$2.94T', volume: '58M' },
-            analysis: { verdict: { signal: 'ACCEPTABLE', confidence: 92 }, target_price: '210.00', timeframe: '5-Year Historical', risk_level: 'LOW', ai_explanation: 'Apple demonstrates strong institutional-grade risk management. The Epic Games antitrust ruling and supply chain China concentration are the primary exposure vectors. Well-disclosed and manageable.', reasons: ['Epic Games antitrust ruling — App Store revenue risk', 'China supply chain concentration (Foxconn dependency)', 'EU Digital Markets Act compliance costs'], flashcard: { title: 'Risk Assessment' },
-                institutional_breakdown: {
-                    total_regulatory_fines: '$550M',
-                    key_litigation: [
-                        'In re Apple Inc. Securities Litigation (2019) — Securities fraud class action; dismissed',
-                        'Epic Games v. Apple (2020-2023) — Antitrust, permanent injunction issued',
-                        'DGCCRF v. Apple (2020) — €25M fine for planned obsolescence',
-                        'United States v. Apple Inc. (2024) — DOJ antitrust suit, ongoing'
-                    ],
-                    regulatory_sentiment: 'Adversarial'
-                }
-            },
-            institutional_metrics: {
-                regulatory_fines_usd: '$550M',
-                raw_sec_excerpts: [
-                    'Note 10 — Commitments and Contingencies (Form 10-K, FY2025): The Company is subject to various legal proceedings and claims. As of September 28, 2025, the Company had accrued approximately $3.2 billion for estimated losses related to pending or threatened litigation.',
-                    'Note 17 — Concentration of Supply Chain Risk (Form 10-K, FY2025): Approximately 90% of iPhone final assembly is performed by two contract manufacturers with primary facilities in Zhengzhou and Shanghai.'
-                ]
-            },
-        },
-        NVDA: {
-            price_data: { price: '874.23', change_percent: 3.21, name: 'NVIDIA Corporation', currency: '$', market_cap: '$2.15T', volume: '42M' },
-            analysis: { verdict: { signal: 'WARNING', confidence: 78 }, target_price: '920.00', timeframe: '5-Year Historical', risk_level: 'MODERATE', ai_explanation: 'NVIDIA carries elevated valuation risk with P/E above 60x. China export restrictions represent ongoing regulatory headwinds. GPU market dominance is strong but crypto revenue dependency creates cyclical vulnerability.', reasons: ['US-China export controls on A100/H100 chips', 'SEC scrutiny of crypto-related revenue disclosure', 'Arm Ltd. acquisition failure — $1.25B breakup fee'], flashcard: { title: 'Risk Assessment' },
-                institutional_breakdown: {
-                    total_regulatory_fines: '$1.26B',
-                    key_litigation: [
-                        'FTC v. NVIDIA / Arm Holdings (2021-2022) — $40B acquisition blocked, $1.25B breakup fee',
-                        'In re NVIDIA Corp. Securities Litigation (2018) — Crypto revenue misrepresentation',
-                        'SEC File No. 3-20893 (2022) — $5.5M settlement for crypto disclosure',
-                        'Samsung v. NVIDIA (2016) — ITC patent dispute, partial adverse finding'
-                    ],
-                    regulatory_sentiment: 'Adversarial'
-                }
-            },
-            institutional_metrics: {
-                regulatory_fines_usd: '$1.26B',
-                raw_sec_excerpts: [
-                    'Note 13 — Commitments and Contingencies (Form 10-K, FY2026): The Company had accrued approximately $890 million in aggregate for pending legal matters, including export compliance reviews. Cumulative forgone revenue from China export controls estimated at $15.2 billion.',
-                    'Note 19 — Customer Concentration Risk (Form 10-K, FY2026): Top five data center customers accounted for approximately 47% of total revenue and 82% of Data Center segment revenue. Three individual customers each exceeded 10% of Data Center revenue.'
-                ]
-            },
-        }
-    };
+    // Hardcoded demo fallbacks removed to ensure live data is strictly used
+    const DEMO_FALLBACKS = {};
 
     // Use API data if available, else hardcoded demo fallback, else generic defaults
     const fallback = DEMO_FALLBACKS[ticker?.toUpperCase()] || {};
@@ -304,16 +238,15 @@ const StockDetail = ({ ticker, onBack, analysisData, mode, isLoading, error, onR
             // But get_historical_data already handles reversing if it was Twelve Data.
         }
 
+        const allPoints = apiPoints || [];
         const tabs = {
-            '1H': apiPoints || gen(80, 228, 11),
-            '1D': apiPoints || gen(80, parseFloat(stockData.price) || 200, 22),
-            '1W': apiPoints || gen(80, 165, 33),
-            '1M': apiPoints || gen(80, 130, 44)
+            '1D': allPoints.length > 2 ? allPoints.slice(-2) : allPoints,
+            '1W': allPoints.length > 7 ? allPoints.slice(-7) : allPoints,
+            '1M': allPoints
         };
 
-        let act = '1D';
-
         function draw(pts) {
+            if (!pts || pts.length === 0) return;
             const W = cv.width, H = cv.height, L = 10, R = 70, T = 14, B = 28;
             const cW = W - L - R, cH = H - T - B;
             ctx.clearRect(0, 0, W, H);
@@ -344,22 +277,24 @@ const StockDetail = ({ ticker, onBack, analysisData, mode, isLoading, error, onR
             ctx.beginPath(); ctx.arc(lx, ly, 2, 0, Math.PI * 2); ctx.fillStyle = '#C9A84C'; ctx.fill();
         }
 
-        draw(tabs[act]);
+        draw(tabs[chartTab]);
         const interval = setInterval(() => {
-            const p = tabs[act];
-            p[p.length - 1] += (Math.random() - .492) * 1.3;
-            draw(p);
+            const p = tabs[chartTab];
+            if (p && p.length > 0) {
+                p[p.length - 1] += (Math.random() - .492) * 1.3;
+                draw(p);
+            }
         }, 2800);
 
         return () => clearInterval(interval);
 
-    }, [stockData, analysisData]);
+    }, [stockData, analysisData, chartTab]);
 
     // Ring Animation
     useEffect(() => {
         const rf = document.getElementById('rFill');
         if (!rf) return;
-        const conf = analysis.verdict.confidence || 87;
+        const conf = analysis.verdict.confidence || 0;
         const C = 2 * Math.PI * 62;
 
         rf.style.strokeDashoffset = C * (1 - conf / 100);
@@ -684,10 +619,9 @@ const StockDetail = ({ ticker, onBack, analysisData, mode, isLoading, error, onR
                                         <span className="sec-t">Price Action</span>
                                     </div>
                                     <div className="gtabs">
-                                        <button className="gt">1H</button>
-                                        <button className="gt on">1D</button>
-                                        <button className="gt">1W</button>
-                                        <button className="gt">1M</button>
+                                        <button className={`gt ${chartTab === '1D' ? 'on' : ''}`} onClick={() => setChartTab('1D')}>1D</button>
+                                        <button className={`gt ${chartTab === '1W' ? 'on' : ''}`} onClick={() => setChartTab('1W')}>1W</button>
+                                        <button className={`gt ${chartTab === '1M' ? 'on' : ''}`} onClick={() => setChartTab('1M')}>1M</button>
                                     </div>
                                 </div>
                                 <div className="ch-bd">

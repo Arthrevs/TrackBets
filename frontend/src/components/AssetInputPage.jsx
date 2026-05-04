@@ -319,6 +319,15 @@ const AssetInputPage = ({ onComplete, onBack }) => {
                 
                 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
                 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+                
+                @media(max-width: 768px) {
+                    .brand { top: 20px; left: 20px; }
+                    .question { font-size: 22px; margin-bottom: 24px; }
+                    .inp { font-size: 32px; padding: 12px 0; }
+                    .stage { padding: 0 20px; }
+                    .sugg-chip { padding: 8px 14px; font-size: 11px; }
+                    #cr, #cd { display: none !important; }
+                }
             `}</style>
 
             <canvas id="gl" ref={canvasRef}></canvas>

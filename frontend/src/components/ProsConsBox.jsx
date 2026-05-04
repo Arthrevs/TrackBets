@@ -18,10 +18,6 @@ const ProsConsBox = ({ analysis }) => {
         }
     });
 
-    // Ensure we have at least 2 of each, fill with defaults
-    while (pros.length < 2) pros.push(pros.length === 0 ? 'Positive momentum detected' : 'Volume above average');
-    while (cons.length < 2) cons.push(cons.length === 0 ? 'Elevated P/E ratio' : 'Sector headwinds possible');
-
     return (
         <div className="gc pros-cons-box rv rd2">
             <div className="sec-hd">

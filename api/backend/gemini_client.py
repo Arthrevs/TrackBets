@@ -115,22 +115,25 @@ _FORENSIC_SYSTEM_PROMPT: str = """You are a ruthless institutional auditor worki
 You have been hired by a sovereign wealth fund to evaluate whether a company is safe for a $500 million allocation.
 You do NOT give the benefit of the doubt. You scrutinize every lawsuit, every product failure, every balance sheet anomaly.
 
-Your job is to read the provided historical forensic data on a company and produce a strict risk assessment.
+Your job is to read the provided live market data (price, news, social sentiment) for a ticker. Based on this data AND your extensive internal knowledge of the company's history, produce a strict risk assessment.
 
 RULES:
-- Be harsh but factual. Cite specific events from the data.
+- Be harsh but factual. Cite specific events.
 - "Acceptable" means the company has manageable, well-disclosed risks.
 - "Warning" means there are material concerns that require deeper diligence.
 - "Critical" means there are forensic red flags that would make an institutional allocator pause.
 - The risk_score is 1-100 where 1 = near-zero risk and 100 = extreme forensic concern.
-- historical_vulnerabilities must contain exactly 3 strings, each citing a SPECIFIC past event.
+- historical_vulnerabilities must contain exactly 3 strings, each citing a SPECIFIC past event (lawsuits, product failures, etc).
 - rationale must be 1-2 sentences maximum, written in the voice of a senior auditor briefing a board.
+- Generate an accurate profile_summary containing historical metrics (lawsuit counts, credit rating, etc).
 
 You MUST respond with ONLY the JSON object. No markdown, no explanation outside the JSON."""
 
 _FORENSIC_RESPONSE_SCHEMA = {
     "type": "object",
     "properties": {
+        "company_name": {"type": "string"},
+        "sector": {"type": "string"},
         "risk_score": {
             "type": "integer",
             "description": "Forensic risk score from 1 (low risk) to 100 (extreme risk)"
@@ -148,62 +151,39 @@ _FORENSIC_RESPONSE_SCHEMA = {
         "rationale": {
             "type": "string",
             "description": "1-2 sentence auditor rationale for the verdict"
+        },
+        "profile_summary": {
+            "type": "object",
+            "properties": {
+                "lawsuits_count": {"type": "integer"},
+                "product_failures_count": {"type": "integer"},
+                "crash_events_count": {"type": "integer"},
+                "risk_flags_count": {"type": "integer"},
+                "debt_to_equity": {"type": "string"},
+                "credit_rating": {"type": "string"}
+            },
+            "required": ["lawsuits_count", "product_failures_count", "crash_events_count", "risk_flags_count", "debt_to_equity", "credit_rating"]
         }
     },
-    "required": ["risk_score", "historical_vulnerabilities", "verdict", "rationale"]
+    "required": ["company_name", "sector", "risk_score", "historical_vulnerabilities", "verdict", "rationale", "profile_summary"]
 }
 
 
-def forensic_analyze(ticker: str, profile: dict) -> dict:
-    """
-    Run Gemini forensic due diligence analysis on a company profile.
-
-    Uses gemini-1.5-pro-latest with response_mime_type="application/json"
-    to enforce strict, parseable JSON output that won't crash the frontend.
-
-    Args:
-        ticker: Stock ticker symbol (e.g. "AAPL").
-        profile: Full forensic profile dict from mock_data.
-
-    Returns:
-        dict with keys: risk_score (int), historical_vulnerabilities (list[str]),
-        verdict (str), rationale (str).
-
-    Raises:
-        RuntimeError: If Gemini client is not configured.
-        ValueError: If Gemini returns unparseable output (should not happen
-                     with response_mime_type enforcement).
-    """
+def forensic_analyze(ticker: str, scraped_data: dict) -> dict:
     import json
 
     client = get_client()
 
-    # Build the user prompt with all forensic data
     user_prompt = f"""FORENSIC DUE DILIGENCE REVIEW
 ===============================
-Company: {profile.get('company_name', ticker)}
 Ticker: {ticker}
-Sector: {profile.get('sector', 'Unknown')}
 
-HISTORICAL NARRATIVE:
-{profile.get('forensic_profile', 'No profile available.')}
+LIVE MARKET DATA:
+Price: {json.dumps(scraped_data.get('price_data', {}), indent=2)}
+News: {scraped_data.get('news', 'No news available')}
+Social Sentiment: {scraped_data.get('social', 'No social data')}
 
-KEY LAWSUITS:
-{json.dumps(profile.get('key_lawsuits', []), indent=2)}
-
-PRODUCT FAILURES:
-{json.dumps(profile.get('product_failures', []), indent=2)}
-
-DEBT PROFILE:
-{json.dumps(profile.get('debt_profile', {}), indent=2)}
-
-MARKET CRASH REACTIONS:
-{json.dumps(profile.get('crash_reactions', []), indent=2)}
-
-RISK FLAGS:
-{json.dumps(profile.get('risk_flags', []), indent=2)}
-
-Produce your forensic risk assessment now."""
+Using your vast internal knowledge of this company's entire history, generate the forensic profile, historical vulnerabilities, and risk analysis."""
 
     config = types.GenerateContentConfig(
         system_instruction=_FORENSIC_SYSTEM_PROMPT,
@@ -219,7 +199,6 @@ Produce your forensic risk assessment now."""
         config=config,
     )
 
-    # response_mime_type guarantees valid JSON, but we still validate
     try:
         result = json.loads(response.text)
     except json.JSONDecodeError:
@@ -252,11 +231,7 @@ _DEEP_DIVE_SYSTEM_PROMPT: str = """You are a ruthless institutional auditor work
 You have been hired by a sovereign wealth fund to evaluate whether a company is safe for a $500 million allocation.
 You do NOT give the benefit of the doubt. You scrutinize every lawsuit, every product failure, every balance sheet anomaly.
 
-This is an INSTITUTIONAL DEEP DIVE. You have been given additional institutional metrics data including
-regulatory fines, detailed litigation history, and raw SEC 10-K footnote excerpts.
-You MUST analyze this additional data and incorporate it into your assessment.
-
-Your job is to read ALL provided forensic data and produce a comprehensive risk assessment with institutional breakdown.
+This is an INSTITUTIONAL DEEP DIVE. You must generate deep institutional metrics based on your vast historical knowledge of the company, combined with the live market data provided.
 
 RULES:
 - Be harsh but factual. Cite specific events from the data.
@@ -268,12 +243,15 @@ RULES:
 - rationale must be 1-2 sentences maximum, written in the voice of a senior auditor briefing a board.
 - The institutional_breakdown must summarize the regulatory fine exposure, cite key litigation, and assess the overall regulatory environment sentiment.
 - regulatory_sentiment must be exactly one of: "Hostile", "Adversarial", "Cooperative", "Neutral".
+- Provide accurate company_name, sector, and profile_summary data.
 
 You MUST respond with ONLY the JSON object. No markdown, no explanation outside the JSON."""
 
 _DEEP_DIVE_RESPONSE_SCHEMA = {
     "type": "object",
     "properties": {
+        "company_name": {"type": "string"},
+        "sector": {"type": "string"},
         "risk_score": {
             "type": "integer",
             "description": "Forensic risk score from 1 (low risk) to 100 (extreme risk)"
@@ -291,6 +269,18 @@ _DEEP_DIVE_RESPONSE_SCHEMA = {
         "rationale": {
             "type": "string",
             "description": "1-2 sentence auditor rationale for the verdict"
+        },
+        "profile_summary": {
+            "type": "object",
+            "properties": {
+                "lawsuits_count": {"type": "integer"},
+                "product_failures_count": {"type": "integer"},
+                "crash_events_count": {"type": "integer"},
+                "risk_flags_count": {"type": "integer"},
+                "debt_to_equity": {"type": "string"},
+                "credit_rating": {"type": "string"}
+            },
+            "required": ["lawsuits_count", "product_failures_count", "crash_events_count", "risk_flags_count", "debt_to_equity", "credit_rating"]
         },
         "institutional_breakdown": {
             "type": "object",
@@ -313,68 +303,25 @@ _DEEP_DIVE_RESPONSE_SCHEMA = {
             "required": ["total_regulatory_fines", "key_litigation", "regulatory_sentiment"]
         }
     },
-    "required": ["risk_score", "historical_vulnerabilities", "verdict", "rationale", "institutional_breakdown"]
+    "required": ["company_name", "sector", "risk_score", "historical_vulnerabilities", "verdict", "rationale", "profile_summary", "institutional_breakdown"]
 }
 
 
-def forensic_analyze_deep(ticker: str, profile: dict) -> dict:
-    """
-    Run expanded Gemini forensic analysis with institutional deep dive.
-
-    Includes institutional_metrics data (regulatory fines, litigation history,
-    raw SEC excerpts) in the prompt, and returns an expanded response with
-    an institutional_breakdown object.
-
-    Args:
-        ticker: Stock ticker symbol (e.g. "AAPL").
-        profile: Full forensic profile dict from mock_data (must include institutional_metrics).
-
-    Returns:
-        dict with standard forensic keys plus institutional_breakdown.
-    """
+def forensic_analyze_deep(ticker: str, scraped_data: dict) -> dict:
     import json
 
     client = get_client()
 
-    inst_metrics = profile.get("institutional_metrics", {})
-
     user_prompt = f"""INSTITUTIONAL DEEP DIVE — FORENSIC DUE DILIGENCE
 ==================================================
-Company: {profile.get('company_name', ticker)}
 Ticker: {ticker}
-Sector: {profile.get('sector', 'Unknown')}
 
-HISTORICAL NARRATIVE:
-{profile.get('forensic_profile', 'No profile available.')}
+LIVE MARKET DATA:
+Price: {json.dumps(scraped_data.get('price_data', {}), indent=2)}
+News: {scraped_data.get('news', 'No news available')}
+Social Sentiment: {scraped_data.get('social', 'No social data')}
 
-KEY LAWSUITS:
-{json.dumps(profile.get('key_lawsuits', []), indent=2)}
-
-PRODUCT FAILURES:
-{json.dumps(profile.get('product_failures', []), indent=2)}
-
-DEBT PROFILE:
-{json.dumps(profile.get('debt_profile', {}), indent=2)}
-
-MARKET CRASH REACTIONS:
-{json.dumps(profile.get('crash_reactions', []), indent=2)}
-
-RISK FLAGS:
-{json.dumps(profile.get('risk_flags', []), indent=2)}
-
-═══════════════════════════════════════════════════
-INSTITUTIONAL METRICS (DEEP DIVE DATA):
-═══════════════════════════════════════════════════
-
-TOTAL REGULATORY FINES: {inst_metrics.get('regulatory_fines_usd', 'N/A')}
-
-DETAILED LITIGATION HISTORY:
-{json.dumps(inst_metrics.get('litigation_history', []), indent=2)}
-
-RAW SEC 10-K EXCERPTS:
-{chr(10).join(inst_metrics.get('raw_sec_excerpts', ['No excerpts available.']))}
-
-Produce your comprehensive forensic risk assessment with institutional breakdown now."""
+Using your vast internal knowledge of this company's entire history, generate the comprehensive forensic profile, including institutional deep dive metrics (fines, litigation)."""
 
     config = types.GenerateContentConfig(
         system_instruction=_DEEP_DIVE_SYSTEM_PROMPT,
@@ -411,14 +358,6 @@ Produce your comprehensive forensic risk assessment with institutional breakdown
     valid_verdicts = {"Acceptable", "Warning", "Critical"}
     if result.get("verdict") not in valid_verdicts:
         result["verdict"] = "Warning"
-
-    # Ensure institutional_breakdown exists
-    if "institutional_breakdown" not in result:
-        result["institutional_breakdown"] = {
-            "total_regulatory_fines": inst_metrics.get("regulatory_fines_usd", "N/A"),
-            "key_litigation": inst_metrics.get("litigation_history", [])[:4],
-            "regulatory_sentiment": "Adversarial"
-        }
 
     return result
 
