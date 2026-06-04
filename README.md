@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Logo / Title Block -->
-<img src="https://api.iconify.design/lucide:chart-candlestick.svg?color=%2300e5ff&width=72&height=72" alt="TrackBets Logo" />
+<img src="assets/trackbets-logo.jpg" alt="TrackBets Logo" width="120" />
 
 # TrackBets
 
